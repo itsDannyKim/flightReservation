@@ -1,7 +1,7 @@
 
 public abstract class UserType {
 	
-	public String Username;
+	public String Username = "";
 	public String Password;
 	public String FirstName;
 	public String LastName;
