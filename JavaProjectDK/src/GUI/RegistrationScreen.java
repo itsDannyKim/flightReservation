@@ -170,6 +170,7 @@ public class RegistrationScreen extends Application {
 			}
 		});
 
+
 		primaryStage.setScene(RegistrationScene);
 		primaryStage.show();
 
