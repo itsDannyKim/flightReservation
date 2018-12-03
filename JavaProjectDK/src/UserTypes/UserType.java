@@ -1,36 +1,28 @@
+package UserTypes;
 
 public abstract class UserType {
-	
-	public String Username = "";
-	public String Password;
-	public String FirstName;
-	public String LastName;
-	public String StreetAddress;
-	public String City;
-	public String State;
-	public int Zipcode;
-	public String Email;
-	public int SocialSecurity;
-	
-	public UserType(){
-		
-		this.Username = Username;
-		this.Password = Password;	
-		
+
+	protected String Username = "";
+	protected String Password;
+	private String FirstName;
+	private String LastName;
+	private String StreetAddress;
+	private String City;
+	private String State;
+	private String Zipcode;
+	private String Email;
+	private String SocialSecurity;
+	private String SecurityQuestion;
+	private String ConfirmPassword;
+
+	public UserType() {
+
+
 	}
-	
-	/*(public static boolean Login(String Username, String Password) {
-		
-		if(Username = db.username && Password = db.password) {
-			return true;
-		}
-		
-	}*/
-	
-	public void Registration(String Username, String Password, String FirstName, 
-			String LastName, String StreetAddress,
-			String City, String State, int Zipcode, String Email, int SocialSecurity) {
-		
+
+	public void Registration(String Username, String Password, String FirstName, String LastName, String StreetAddress,
+			String City, String State, String Zipcode, String Email, String SocialSecurity) {
+
 		this.Username = Username;
 		this.Password = Password;
 		this.FirstName = FirstName;
@@ -41,7 +33,7 @@ public abstract class UserType {
 		this.Zipcode = Zipcode;
 		this.Email = Email;
 		this.SocialSecurity = SocialSecurity;
-		
+
 	}
 
 	public String getUsername() {
@@ -100,11 +92,11 @@ public abstract class UserType {
 		State = state;
 	}
 
-	public int getZipcode() {
+	public String getZipcode() {
 		return Zipcode;
 	}
 
-	public void setZipcode(int zipcode) {
+	public void setZipcode(String zipcode) {
 		Zipcode = zipcode;
 	}
 
@@ -116,16 +108,27 @@ public abstract class UserType {
 		Email = email;
 	}
 
-	public int getSocialSecurity() {
+	public String getSocialSecurity() {
 		return SocialSecurity;
 	}
 
-	public void setSocialSecurity(int socialSecurity) {
+	public void setSocialSecurity(String socialSecurity) {
 		SocialSecurity = socialSecurity;
 	}
-	
-	
-	
 
+	public String getSecurityQuestion() {
+		return SecurityQuestion;
+	}
+
+	public void setSecurityQuestion(String securityQuestion) {
+		SecurityQuestion = securityQuestion;
+	}
+
+	public String getConfirmPassword() {
+		return ConfirmPassword;
+	}
+
+	public void setConfirmPassword(String confirmPassword) {
+		ConfirmPassword = confirmPassword;
+	}
 }
-
