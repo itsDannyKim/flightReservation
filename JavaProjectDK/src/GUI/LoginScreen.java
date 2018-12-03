@@ -87,7 +87,14 @@ public class LoginScreen extends Application {
 		hbBtn2.setAlignment(Pos.BOTTOM_RIGHT);
 		hbBtn2.getChildren().add(btnForgot);
 		grid.add(hbBtn2, 1, 6);
-		
+		btnForgot.setOnAction(e -> {
+			try {
+				ForgotPasswordScreen screen = new ForgotPasswordScreen();
+				screen.start(primaryStage);
+			} catch (Exception el) {
+				el.printStackTrace();
+			}
+		});
 		
 		
 		primaryStage.setScene(LoginScene);
