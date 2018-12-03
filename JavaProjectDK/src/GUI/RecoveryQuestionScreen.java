@@ -57,7 +57,7 @@ public class RecoveryQuestionScreen extends Application {
 		Scene recoveryQuestionScene = new Scene(grid2, 350, 200);
 		try {
 			// get a connection to the database
-			Connection myConn = DriverManager.getConnection("jdbc:mysql://127.0.0.1:3306/CIS3270", "root", "Tsiknus41");
+			Connection myConn = DriverManager.getConnection("jdbc:mysql://localhost:3306/java_project_database_master", "root", "Adeftday0302!?");
 			// create a statement
 			Statement myStat = myConn.createStatement();
 			// execute a query

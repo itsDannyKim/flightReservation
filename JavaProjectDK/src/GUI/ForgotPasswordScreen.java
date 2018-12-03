@@ -52,6 +52,7 @@ public class ForgotPasswordScreen extends Application{
 		userName.setPromptText("Username");
 		grid2.add(userName, 2, 2);
 		
+		//Checks if the username is in the database 
 		Button btnRecover = new Button("Recover");
 		HBox hbbtnRecover = new HBox(10);
 		hbbtnRecover.setAlignment(Pos.BOTTOM_LEFT);
@@ -61,14 +62,20 @@ public class ForgotPasswordScreen extends Application{
 			try {
 				// get a connection to the database
 				Connection myConn = DriverManager.getConnection(
-						"jdbc:mysql://127.0.0.1:3306/CIS3270", "root", "Tsiknus41");
+						"jdbc:mysql://localhost:3306/java_project_database_master", "root", "Adeftday0302!?");
 				// create a statement
 				Statement myStat = myConn.createStatement();
 				// execute a query
 				ResultSet myRs;
 				user = userName.getText().trim();
-				String sqlUserCheck = "SELECT userNAME FROM Customer where userNAME = '" + user + "'";
+				String sqlUserCheck = "SELECT UserName FROM Customer where UserName = '" + user + "'";
 				myRs = myStat.executeQuery(sqlUserCheck);
+				if(myRs == null) {
+					AlertBox.display("Incorrect Username", "There is no user with the username: " + user);
+				}else {
+					RecoveryQuestionScreen recoveryQScreen = new RecoveryQuestionScreen();
+					recoveryQScreen.start(primaryStage);
+				}
 			} catch (Exception el) {
 				el.printStackTrace();
 			}

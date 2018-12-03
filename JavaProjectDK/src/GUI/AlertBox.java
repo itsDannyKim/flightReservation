@@ -10,8 +10,10 @@ import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
 import javafx.stage.*;
 
-public class AlertBox {
+public class AlertBox  {
+
 	public static void display(String title, String message) {
+		
 		Stage window = new Stage();
 		window.initModality(Modality.APPLICATION_MODAL);
 		window.setTitle(title);
@@ -31,5 +33,6 @@ public class AlertBox {
 		window.setScene(scene);
 		window.showAndWait();
 	}
-
+		
 }
+

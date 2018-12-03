@@ -1,7 +1,10 @@
 package GUI;
 
 import java.sql.Connection;
+import java.sql.DriverManager;
 import java.sql.PreparedStatement;
+
+import com.sun.javafx.application.LauncherImpl;
 
 import UserTypes.Customer;
 import javafx.application.Application;
@@ -39,7 +42,6 @@ public class RegistrationScreen extends Application {
 	public static void main(String[] args) {
 
 		Application.launch(args);
-
 	}
 
 	@Override
@@ -85,6 +87,8 @@ public class RegistrationScreen extends Application {
 		Label pconfirmPassLbl = new Label("Confirm Password");
 		grid2.add(pconfirmPassLbl, 1, 9);
 
+		// sets a combo box which allows the user to choose which security question they
+		// want to answer
 		final ComboBox<String> securityQuestionComboBox = new ComboBox<String>();
 		securityQuestionComboBox.getItems().addAll("Where was your birthplace?", "Who is your best friend?",
 				"What was your first car?", "What is your favorite food?");
@@ -114,6 +118,8 @@ public class RegistrationScreen extends Application {
 		ConfirmPassword.setPromptText("Confirm");
 		SecurityQuestionAnswer.setPromptText("Answer");
 
+		// creates a button to submit all the information from the registration screen
+		// to the database
 		Button btnSubmit = new Button("Submit");
 		HBox hbBtn = new HBox(10);
 		hbBtn.setAlignment(Pos.BOTTOM_LEFT);
@@ -139,8 +145,21 @@ public class RegistrationScreen extends Application {
 					cust.setConfirmPassword(ConfirmPassword.getText());
 					cust.setSocialSecurity(SocialSecurity.getText());
 					// dbConnection = Connect();
-					String sql = "Insert into Customer(firstName,lastName, email,userNAME,Address,Zip,State,SecurityQ,  Password, ConfirmPassword,SSN) VALUES (?,?,?,?,?,?,?,?,?,?,?)";
+					String sql = "Insert into Customer(firstName, lastName, email, UserName,"
+							+ "StreetAddress, ZipCode, State, SecurityQ, Password, ConfirmPassword, SSN) VALUES (?,?,?,?,?,?,?,?,?,?,?)";
 					preparedStatement = dbConnection.prepareStatement(sql);
+
+					preparedStatement.setString(1, cust.getFirstName());
+					preparedStatement.setString(2, cust.getLastName());
+					preparedStatement.setString(3, cust.getEmail());
+					preparedStatement.setString(4, cust.getUsername());
+					preparedStatement.setString(5, cust.getStreetAddress());
+					preparedStatement.setString(6, cust.getZipcode());
+					preparedStatement.setString(7, cust.getState());
+					preparedStatement.setString(8, cust.getSecurityQuestion());
+					preparedStatement.setString(9, cust.getPassword());
+					preparedStatement.setString(10, cust.getConfirmPassword());
+					preparedStatement.setString(11, cust.getSocialSecurity());
 
 					preparedStatement.executeUpdate();
 					dbConnection.close();
@@ -170,12 +189,26 @@ public class RegistrationScreen extends Application {
 			}
 		});
 
-
 		primaryStage.setScene(RegistrationScene);
 		primaryStage.show();
 
 	}
 
+	public static Connection Connect() {
+		Connection con = null;
+		try {
+			Class.forName("com.mysql.jdbc.Driver");
+			con = (Connection) DriverManager.getConnection("jdbc:mysql://127.0.0.1:3306/CIS3270", "root", "Tsiknus41");
+		} catch (Exception e) {
+			System.out.println("Could not connect");
+		}
+		if (con != null) {
+			System.out.println("Connected Successfully");
+		}
+		return con;
+	}
+
+	// checks if the username is more than three characters
 	public static boolean checkUser(TextField User) {
 		if (User.toString().length() <= 3) {
 			AlertBox.display("Error", "Username must be more than 3 characters");
@@ -184,6 +217,8 @@ public class RegistrationScreen extends Application {
 		return true;
 	}
 
+	// checks if the password has a number and the confirm password field matches
+	// the password field
 	public static boolean checkPass(PasswordField pass, PasswordField passw) {
 		String str = pass.getText();
 		int counter = 0;
