@@ -136,7 +136,6 @@ public class LoginScreen extends Application {
 	public static Connection Connect() {
 		Connection con = null;
 		try {
-			//Class.forName("com.mysql.jdbc.Driver");
 			con = DriverManager.getConnection("jdbc:mysql://localhost:3306/java_project_database_master", "root", "Adeftday0302!?");
 		} catch (Exception e) {
 			System.out.println("Can not connect");

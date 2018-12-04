@@ -2,6 +2,7 @@ package GUI;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
 
@@ -59,6 +60,7 @@ public class ForgotPasswordScreen extends Application{
 		hbbtnRecover.getChildren().add(btnRecover);
 		grid2.add(hbbtnRecover, 2, 5);
 		btnRecover.setOnAction(e -> {
+			
 			try {
 				// get a connection to the database
 				Connection myConn = DriverManager.getConnection(
@@ -68,7 +70,7 @@ public class ForgotPasswordScreen extends Application{
 				// execute a query
 				ResultSet myRs;
 				user = userName.getText().trim();
-				String sqlUserCheck = "SELECT UserName FROM Customer where UserName = '" + user + "'";
+				String sqlUserCheck = "SELECT UserName FROM users where UserName = '" + user + "'";
 				myRs = myStat.executeQuery(sqlUserCheck);
 				if(myRs == null) {
 					AlertBox.display("Incorrect Username", "There is no user with the username: " + user);
