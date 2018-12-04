@@ -36,6 +36,7 @@ public class SearchAFlight extends Application {
 		Application.launch(args);
 	}
 	
+	
 	@SuppressWarnings("unchecked")
 	@Override
 	public void start(Stage primaryStage) throws Exception {
@@ -48,46 +49,6 @@ public class SearchAFlight extends Application {
 		gridLayout.setPadding(new Insets(10, 10, 10, 10));
 		gridLayout.setVgap(8);
 		gridLayout.setHgap(10);
-		
-		// Create the 'Search by' label
-		Label searchByLabel = new Label("Search by: ");
-		GridPane.setConstraints(searchByLabel, 0, 0);
-		
-		// Create the options ChoiceBox 
-		searchByOptions = new ChoiceBox<>();
-		searchByOptions.getItems().addAll("From City", "To City", "Date", "Time");
-		searchByOptions.setValue("From City");
-		GridPane.setConstraints(searchByOptions, 1, 0);
-		
-		// Create a text field to input criteria
-		searchCriteria = new TextField();
-		searchCriteria.setPromptText("Enter your criteria");
-		GridPane.setConstraints(searchCriteria, 2, 0);
-	
-		
-		// Create a 'Search Now' button
-		Button searchNow = new Button();
-		searchNow.setText("Go!");
-		GridPane.setConstraints(searchNow, 3, 0);
-		searchNow.setOnAction(e -> goSearch());
-		
-		// Create a 'Book" button
-		Button bookIt = new Button();
-		bookIt.setText("Book This Flight");
-		GridPane.setConstraints(bookIt, 3, 10);
-		
-		
-		// Creates 'Log Out' button to go back to 'Login Screen'
-		Button btnLogOut = new Button("Log Out");
-		GridPane.setConstraints(btnLogOut, 0, 10);
-		btnLogOut.setOnAction(e -> {
-			try {
-				LoginScreen screen = new LoginScreen();
-				screen.start(primaryStage);
-			} catch (Exception el) {
-				el.printStackTrace();
-			}
-		});
 		
 		// The following code creates the tables
 		TableColumn<Flight, Integer> flightIDColumn = new TableColumn<>("Flight ID");
@@ -141,21 +102,60 @@ public class SearchAFlight extends Application {
 				passengerLimitColumn, priceColumn);
 		
 		// set table location on grid???
-		GridPane.setConstraints(searchResults, 1, 1);
+		GridPane.setConstraints(searchResults, 2, 2);
 		
+		// Create the 'Search by' label
+		Label searchByLabel = new Label("Search by: ");
+		GridPane.setConstraints(searchByLabel, 0, 0);
+		
+		// Create the options ChoiceBox 
+		searchByOptions = new ChoiceBox<>();
+		searchByOptions.getItems().addAll("From City", "To City", "Date", "Time");
+		searchByOptions.setValue("From City");
+		GridPane.setConstraints(searchByOptions, 1, 0);
+		
+		// Create a text field to input criteria
+		searchCriteria = new TextField();
+		searchCriteria.setPromptText("Enter your criteria");
+		GridPane.setConstraints(searchCriteria, 2, 0);
+	
+		
+		// Create a 'Search Now' button
+		Button searchNow = new Button();
+		searchNow.setText("Go!");
+		GridPane.setConstraints(searchNow, 3, 0);
+		searchNow.setOnAction(e -> goSearch());
+		
+		// Create a 'Book" button
+		Button bookIt = new Button();
+		bookIt.setText("Book This Flight");
+		GridPane.setConstraints(bookIt, 3, 10);
+		
+		
+		// Creates 'Log Out' button to go back to 'Login Screen'
+		Button btnLogOut = new Button("Log Out");
+		GridPane.setConstraints(btnLogOut, 0, 10);
+		btnLogOut.setOnAction(e -> {
+			try {
+				LoginScreen screen = new LoginScreen();
+				screen.start(primaryStage);
+			} catch (Exception el) {
+				el.printStackTrace();
+			}
+		});
 		
 		// Add things to the grid
 		gridLayout.getChildren().addAll(searchByLabel, searchByOptions, searchCriteria, searchNow, btnLogOut, bookIt, searchResults);
 		
 		// This creates the scene
-		Scene customerSearch = new Scene(gridLayout, 600, 400);
+		SearchFlightScene = new Scene(gridLayout, 800, 600);
 		
-		primaryStage.setScene(customerSearch);
+		primaryStage.setScene(SearchFlightScene);
 		primaryStage.show();
 	}
 	
 	// Method to search flights
-	private void goSearch() {
+	public void goSearch() {
 		
 		// ArrayList to store flights
 		ObservableList<Flight> flights = FXCollections.observableArrayList();
@@ -189,6 +189,7 @@ public class SearchAFlight extends Application {
 													myResult.getString("DepartingDate"), myResult.getString("ArrivalDate"),
 													0, myResult.getInt("PassengerLimit"), myResult.getInt("Price")
 									));
+									searchResults.setItems(flights);
 								}
 								
 								myStmt.close();
@@ -213,6 +214,7 @@ public class SearchAFlight extends Application {
 													myResult.getString("DepartingDate"), myResult.getString("ArrivalDate"),
 													0, myResult.getInt("PassengerLimit"), myResult.getInt("Price")
 									));
+									searchResults.setItems(flights);
 								}
 								
 								myStmt.close();
@@ -237,6 +239,7 @@ public class SearchAFlight extends Application {
 												myResult.getString("DepartingDate"), myResult.getString("ArrivalDate"),
 												0, myResult.getInt("PassengerLimit"), myResult.getInt("Price")
 								));
+								searchResults.setItems(flights);
 							}
 							
 							myStmt.close();
@@ -261,6 +264,7 @@ public class SearchAFlight extends Application {
 												myResult.getString("DepartingDate"), myResult.getString("ArrivalDate"),
 												0, myResult.getInt("PassengerLimit"), myResult.getInt("Price")
 								));
+								searchResults.setItems(flights);
 							}
 							
 							myStmt.close();
@@ -319,23 +323,3 @@ public class SearchAFlight extends Application {
 	}
 	
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
