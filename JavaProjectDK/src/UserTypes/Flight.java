@@ -3,29 +3,33 @@ package UserTypes;
 public class Flight {
 
 	private int FlightId;
+	private String carrier;
 	private String DepartingDate;
 	private String ArrivalDate;
 	private String DepartingCity;
 	private String ArrivingCity;
-	private int PassengerLimit;
-	private boolean isFull;
-	private String DepartingTime;
 	private String ArrivalTime;
-	private String carrier;
+	private String DepartingTime;
 	private int currentPassengers;
+	private int PassengerLimit;
 	private int Price;
-
+	private boolean isFull;
+	
 	public Flight(int FlightId, String Carrier, String DepartingCity, String ArrivingCity, String DepartingTime,
 			String ArrivalTime, String DepartingDate, String ArrivalDate, int currentPassengers, int PassengerLimit, int Price) {
 
 		this.FlightId = FlightId;
+		this.carrier = Carrier;
 		this.DepartingDate = DepartingDate;
 		this.ArrivalDate = ArrivalDate;
 		this.DepartingCity = DepartingCity;
 		this.ArrivingCity = ArrivingCity;
-		this.PassengerLimit = PassengerLimit;
 		this.DepartingTime = DepartingTime;
 		this.ArrivalTime = ArrivalTime;
+		this.currentPassengers = currentPassengers;
+		this.PassengerLimit = PassengerLimit;
+		this.Price = Price;
+		
 	}
 
 	public int getFlightId() {
