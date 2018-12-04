@@ -34,6 +34,8 @@ import javafx.stage.Stage;
 public class LoginScreen extends Application {
 	// creates scene
 	Scene RegistrationScene, LoginScreen;
+	TextField userTextField;
+	static String usr = "";
 
 	public static void main(String[] args) {
 
@@ -62,7 +64,7 @@ public class LoginScreen extends Application {
 		Label userName = new Label("User Name:");
 		grid.add(userName, 0, 1);
 
-		TextField userTextField = new TextField();
+		userTextField = new TextField();
 		grid.add(userTextField, 1, 1);
 
 		Label pw = new Label("Password:");
@@ -100,6 +102,7 @@ public class LoginScreen extends Application {
 			try {
 				if (checkUsername(userTextField, primaryStage) == true && checkPassword(pwBox, primaryStage) == true) {
 					searchFlight.start(primaryStage);
+					this.setUsr(userTextField);
 
 				} else if (userTextField.getText().equals("Admin") && pwBox.getText().equals("Admin")) {
 					searchFlightAdmin.start(primaryStage);
@@ -198,5 +201,14 @@ public class LoginScreen extends Application {
 		}
 		return false;
 	}
-
+	
+	public void setUsr(TextField input) {
+		usr = input.getText();
+	}
+	
+	public static String getUsr() {
+		return usr;
+	}
 }
+
+	

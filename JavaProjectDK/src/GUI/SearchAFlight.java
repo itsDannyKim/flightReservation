@@ -1,6 +1,7 @@
 package GUI;
 
 // Java FX imports
+import UserTypes.Flight;
 import javafx.application.Application;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -23,7 +24,9 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 
+import UserTypes.Customer;
 // Class imports
 import UserTypes.Flight;
 
@@ -33,6 +36,7 @@ public class SearchAFlight extends Application {
 	ChoiceBox<String> searchByOptions;
 	TextField searchCriteria;
 	TableView<Flight> searchResults;
+	ObservableList<Flight> bookedFlights;
 
 	public static void main(String[] args) {
 		Application.launch(args);
@@ -44,12 +48,6 @@ public class SearchAFlight extends Application {
 
 		// This sets the name of the window title
 		primaryStage.setTitle("Search a Flight");
-
-		// This creates a grid lay out.
-		GridPane gridLayout = new GridPane();
-		gridLayout.setPadding(new Insets(10, 10, 10, 10));
-		gridLayout.setVgap(8);
-		gridLayout.setHgap(10);
 
 		// The following code creates the tables
 		TableColumn<Flight, Integer> flightIDColumn = new TableColumn<>("Flight ID");
@@ -102,38 +100,35 @@ public class SearchAFlight extends Application {
 				departingCityColumn, arrivingCityColumn, arrivalTimeColumn, departingTimeColumn,
 				currentPassengersColumn, passengerLimitColumn, priceColumn);
 
-		// set table location on grid???
-		GridPane.setConstraints(searchResults, 2, 2);
-
 		// Create the 'Search by' label
 		Label searchByLabel = new Label("Search by: ");
-		GridPane.setConstraints(searchByLabel, 0, 0);
 
 		// Create the options ChoiceBox
 		searchByOptions = new ChoiceBox<>();
 		searchByOptions.getItems().addAll("From City", "To City", "Date", "Time");
 		searchByOptions.setValue("From City");
-		GridPane.setConstraints(searchByOptions, 1, 0);
 
 		// Create a text field to input criteria
 		searchCriteria = new TextField();
 		searchCriteria.setPromptText("Enter your criteria");
-		GridPane.setConstraints(searchCriteria, 2, 0);
 
 		// Create a 'Search Now' button
 		Button searchNow = new Button();
 		searchNow.setText("Go!");
-		GridPane.setConstraints(searchNow, 3, 0);
 		searchNow.setOnAction(e -> goSearch());
 
 		// Create a 'Book" button
 		Button bookIt = new Button();
 		bookIt.setText("Book This Flight");
-		GridPane.setConstraints(bookIt, 3, 10);
+		bookIt.setOnAction(e -> bookFlight());
+
+		// Create a 'Book" button
+		Button unbookIt = new Button();
+		unbookIt.setText("Unbook This Flight");
+		unbookIt.setOnAction(e -> unbookFlight());
 
 		// Creates 'Log Out' button to go back to 'Login Screen'
 		Button btnLogOut = new Button("Log Out");
-		GridPane.setConstraints(btnLogOut, 0, 10);
 		btnLogOut.setOnAction(e -> {
 			try {
 				LoginScreen screen = new LoginScreen();
@@ -153,7 +148,7 @@ public class SearchAFlight extends Application {
 		HBox bottomMenu = new HBox();
 		bottomMenu.setPadding(new Insets(10, 10, 10, 10));
 		bottomMenu.setSpacing(10);
-		bottomMenu.getChildren().addAll(btnLogOut, bookIt);
+		bottomMenu.getChildren().addAll(btnLogOut, bookIt, unbookIt);
 
 		// Create the VBox, stack them!
 		VBox box = new VBox();
@@ -310,6 +305,75 @@ public class SearchAFlight extends Application {
 		}
 
 		return flights;
+	}
+
+	public void bookFlight() {
+		ObservableList<Flight> flights = FXCollections.observableArrayList();
+		Flight selectedFlight = searchResults.getSelectionModel().getSelectedItem();
+
+		/*if (bookedFlights != null) {
+			for (int i = 0; i < bookedFlights.size() + 1; i++) {
+
+				if (selectedFlight.get(0).getDepartingDate().equals(bookedFlights.get(i).getDepartingDate())) {
+					new AlertBox();
+					AlertBox.display("Add a Flight", "Booking Unsuccessful!");
+					break;
+				}
+			}
+
+		}*/
+
+		Connection dbConnection = null;
+		PreparedStatement preparedStatement = null;
+
+		try {
+
+			dbConnection = connect();
+
+			String checkbooking = "Select FlightID FROM Customer WHERE FlightID NOT NULL";
+			PreparedStatement myStat1 = dbConnection.prepareStatement(checkbooking);
+			ResultSet rs2;
+			rs2 = myStat1.executeQuery();
+			
+			String fid2 = selectedFlight.getFlightId()+ "";
+			
+			String fid = rs2.getInt("FlightID") + "";
+			while (rs2.next()) {
+				if (fid2 != fid) {
+					String sql = "INSERT INTO Customer(FlightID) VALUES(selectedFlight.getFlightId())";
+
+					PreparedStatement myStat = dbConnection.prepareStatement(sql);
+					ResultSet rs1;
+					rs1 = myStat.executeQuery();
+					
+					myStat.executeUpdate();
+					dbConnection.close();
+					myStat.close();
+					
+					AlertBox.display("Booked!", "Flight successfully booked");
+				}else if(fid2==fid){
+					AlertBox.display("Not Booked", "Flight already booked");
+
+				}else{
+					AlertBox.display("Unsuccessful", "Flight not booked");
+
+				}
+			}
+
+			// preparedStatement.setString(10, cust.getConfirmPassword());
+
+
+		} catch (SQLException e) {
+
+			e.printStackTrace();
+		}
+	}
+
+	public void unbookFlight() {
+
+		new AlertBox();
+		AlertBox.display("Add a flight", "Booking Successfully Removed!");
+
 	}
 
 	// This is to shorten the code, instead of declaring a connection in a
