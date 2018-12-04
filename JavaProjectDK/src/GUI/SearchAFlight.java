@@ -3,12 +3,14 @@ package GUI;
 //Java FX imports
 import javafx.application.Application;
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 
 //JDBC imports
@@ -49,6 +51,7 @@ public class SearchAFlight extends Application {
 		TextField searchCriteria = new TextField();
 		searchCriteria.setPromptText("Enter your criteria");
 		GridPane.setConstraints(searchCriteria, 2, 0);
+	
 		
 		// Create a 'Search Now' button
 		Button searchNow = new Button();
@@ -58,18 +61,26 @@ public class SearchAFlight extends Application {
 		//TO DO INSERT DATA FROM MYSQL
 		
 		
-		// Create a 'Go Back' button
-		Button goBack = new Button();
-		goBack.setText("Go Back");
-		GridPane.setConstraints(goBack, 0, 10);
-		
-		//Create a 'Book" button
+		// Create a 'Book" button
 		Button bookIt = new Button();
 		bookIt.setText("Book This Flight");
 		GridPane.setConstraints(bookIt, 3, 10);
 		
+		
+		// Creates 'Log Out' button to go back to 'Login Screen'
+		Button btnLogOut = new Button("Log Out");
+		GridPane.setConstraints(btnLogOut, 0, 10);
+		btnLogOut.setOnAction(e -> {
+			try {
+				LoginScreen screen = new LoginScreen();
+				screen.start(primaryStage);
+			} catch (Exception el) {
+				el.printStackTrace();
+			}
+		});
+		
 		// Add things to the grid
-		gridLayout.getChildren().addAll(searchByLabel, searchByOptions, searchCriteria, searchNow, goBack, bookIt);
+		gridLayout.getChildren().addAll(searchByLabel, searchByOptions, searchCriteria, searchNow, btnLogOut, bookIt);
 		
 		// This creates the scene
 		Scene customerSearch = new Scene(gridLayout, 600, 400);
