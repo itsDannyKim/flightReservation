@@ -4,7 +4,6 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import SearchAFlight.java;
 import GUI.RegistrationScreen;
 import javafx.application.Application;
 import javafx.event.ActionEvent;
@@ -88,13 +87,13 @@ public class LoginScreen extends Application {
 		grid.add(hbBtn1, 1, 4);
 		btnLogin.setOnAction(e -> {
 			SearchAFlight searchFlight = new SearchAFlight();
-			Main_admin mainad = new Main_admin();
+			//Main_admin mainad = new Main_admin();
 			try {
 				if (checkUsername(userTextField, primaryStage) == true && checkPassword(pwBox, primaryStage) == true) {
 					searchFlight.start(primaryStage);
 
 				} else if (userTextField.getText().equals("Admin") && pwBox.getText().equals("Admin2018")) {
-					mainad.start(primaryStage);
+					//mainad.start(primaryStage);
 				} else
 					AlertBox.display("Error",
 							"Incorrect Login Credentials.  Please try again or click Forgot Password");
@@ -127,8 +126,9 @@ public class LoginScreen extends Application {
 	public static Connection Connect() {
 		Connection con = null;
 		try {
-			Class.forName("com.mysql.jdbc.Driver");
-			con = (Connection) DriverManager.getConnection("jdbc:mysql://localhost:3306/java_project_database_master", "root", "Adeftday0302!?");
+			con = DriverManager.getConnection("jdbc:mysql://localhost:3306/session8", "root", "Adeftday0302!?");
+			//Class.forName("com.mysql.jdbc.Driver");
+			//con = (Connection) DriverManager.getConnection("jdbc:mysql://localhost:3306/java_project_database_master", "root", "Adeftday0302!?");
 		} catch (Exception e) {
 			System.out.println("Can not connect");
 		}
@@ -148,7 +148,7 @@ public class LoginScreen extends Application {
 			// starts the connection and runs sql query to select the usernames that are not
 			// admin
 			dbConnection = Connect();
-			String sql = "SELECT UserName FROM Customer WHERE UserName NOT LIKE 'Admin' ";
+			String sql = "SELECT UserName FROM users WHERE UserName NOT LIKE 'Admin' ";
 			preparedStatement = dbConnection.prepareStatement(sql);
 			ResultSet rs = preparedStatement.executeQuery();
 			while (rs.next()) {
@@ -173,7 +173,7 @@ public class LoginScreen extends Application {
 
 		try {
 			dbConnection = Connect();
-			String sql = "SELECT Password FROM Customer WHERE Password NOT LIKE 'Admin'";
+			String sql = "SELECT PasswordAsHash FROM users WHERE PasswordAshHash NOT LIKE 'Admin'";
 			preparedStatement = dbConnection.prepareStatement(sql);
 			ResultSet rs = preparedStatement.executeQuery();
 			
