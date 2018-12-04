@@ -14,6 +14,7 @@ public abstract class UserType {
 	private String SocialSecurity;
 	private String SecurityQuestion;
 	private String ConfirmPassword;
+	private String FlightID;
 
 	public UserType() {
 
