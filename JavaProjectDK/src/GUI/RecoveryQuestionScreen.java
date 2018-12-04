@@ -49,62 +49,24 @@ public class RecoveryQuestionScreen extends Application {
 		grid2.setHgap(10);
 		grid2.setVgap(10);
 		grid2.setPadding(new Insets(25, 25, 25, 25));
-
+		
 		Text scenetitle = new Text("Recovery Question");
 		scenetitle.setFont(Font.font("Tahoma", FontWeight.NORMAL, 20));
 		grid2.add(scenetitle, 1, 1);
 
-		Scene recoveryQuestionScene = new Scene(grid2, 350, 200);
-		try {
-			// get a connection to the database
-			Connection myConn = DriverManager.getConnection("jdbc:mysql://localhost:3306/java_project_database_master", "root", "Adeftday0302!?");
-			// create a statement
-			Statement myStat = myConn.createStatement();
-			// execute a query
-			ResultSet myRs;
-			String sqlUserCheck = "SELECT UserInputAnswer FROM Security_Question where Users.UserID =  Security_Question.QuestionID "
-					+ "AND UserName = '" + user + "'";
-			myRs = myStat.executeQuery(sqlUserCheck);
-
-			// Creates a variable for future checking
-			int count = 0;
-
-			while (myRs.next()) {
-
-				count += 1;
-
-				secQuest = myRs.getString("SecurityQuestion");
-
-				// sets security answer from database to be compared to user answer
-				secAnswer = myRs.getString("UserInputAnswer");
-
-				// stores password from database
-				password = myRs.getString("Password");
-			}
-			myStat.close();
-			myRs.close();
-			myConn.close();
-			// If user is in the database and the password is correct it it will take user
-			// to main page
-			if (count == 1) {
-
-			}
-
-		} catch (Exception e1) {
-
-		}
+		Scene recoveryQuestionScene = new Scene(grid2, 400, 200);
 
 		Label securityQuestionLabel = new Label("Enter The Answer To Your Security Question: ");
 		grid2.add(securityQuestionLabel, 1, 0);
 		grid2.setAlignment(Pos.TOP_CENTER);
 		securityQuestionLabel.setTextAlignment(TextAlignment.CENTER);
-		
+
 		Label questionLabel = new Label(secQuest);
 		grid2.add(questionLabel, 1, 1);
 
 		TextField answerField = new TextField();
 		grid2.add(answerField, 1, 2);
-		
+
 		Button btnHome = new Button("Home");
 		HBox hbBtnHome = new HBox(10);
 		hbBtnHome.setAlignment(Pos.BOTTOM_LEFT);
@@ -119,6 +81,59 @@ public class RecoveryQuestionScreen extends Application {
 			}
 		});
 
+		Button btnSubmit = new Button("Submit");
+		HBox hbbtnSubmit = new HBox(10);
+		hbbtnSubmit.setAlignment(Pos.BOTTOM_LEFT);
+		hbbtnSubmit.getChildren().add(btnSubmit);
+		grid2.add(hbbtnSubmit, 2, 3);
+		btnHome.setOnAction(e -> {
+			try {
+				// get a connection to the database
+				Connection myConn = DriverManager.getConnection("jdbc:mysql://localhost:3306/java_project_database_master",
+						"root", "Adeftday0302!?");
+				// create a statement
+				Statement myStat = myConn.createStatement();
+				// execute a query
+				ResultSet myRs;
+				ResultSet myRs2;
+				String sqlUserCheck = "SELECT UserInputAnswer FROM Security_Question WHERE users.UserID = Security_Question.QuestionID"
+						+ "AND UserName = '" + user + "'";
+				
+				String sqlPassWord = "SELECT PasswordAsHash FROM users WHERE users.UserID = Security_Question.QuestionID"
+						+ "AND UserName = '" + user + "'";
+				
+				myRs = myStat.executeQuery(sqlUserCheck);
+				myRs2 = myStat.executeQuery(sqlPassWord);
+
+				// Creates a variable for future checking
+				int count = 0;
+
+				while (myRs.next()) {
+
+					count++;
+
+					// sets security answer from database to be compared to user answer
+					secAnswer = myRs.getString("UserInputAnswer");
+
+					// stores password from database
+					password = myRs2.getString("Password");
+				}
+				myStat.close();
+				myRs.close();
+				myConn.close();
+
+				if (count == 1 && userAnswer.equals(secAnswer)) {
+					AlertBox.display("Password", "The password for your account is: " + password);
+
+				} else if (count == 1 && secAnswer != userAnswer) {
+					AlertBox.display("Incorrect Answer", "That answer is Incorrect. Please try again.");
+				} else {
+					AlertBox.display("Incorrect Answer", "That answer is incotrrect. Please try again.");
+				}
+			} catch (Exception el) {
+				el.printStackTrace();
+			}
+		});
 
 		primaryStage.setScene(recoveryQuestionScene);
 		primaryStage.show();

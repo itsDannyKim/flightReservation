@@ -128,6 +128,8 @@ public class RegistrationScreen extends Application {
 		btnSubmit.setOnAction(e -> {
 			Connection dbConnection = null;
 			PreparedStatement preparedStatement = null;
+			PreparedStatement preparedStatement2 = null;
+			PreparedStatement preparedStatement3 = null;
 
 			try {
 				if (checkUser(Username) == true && checkPass(Password, ConfirmPassword) == true) {
@@ -142,24 +144,33 @@ public class RegistrationScreen extends Application {
 					cust.setState(State.getText());
 					cust.setSecurityQuestion(SecurityQuestionAnswer.getText());
 					cust.setPassword(Password.getText());
-					cust.setConfirmPassword(ConfirmPassword.getText());
+					//cust.setConfirmPassword(ConfirmPassword.getText());
 					cust.setSocialSecurity(SocialSecurity.getText());
-					// dbConnection = Connect();
-					String sql = "Insert into Customer(firstName, lastName, email, UserName,"
-							+ "StreetAddress, ZipCode, State, SecurityQ, Password, ConfirmPassword, SSN) VALUES (?,?,?,?,?,?,?,?,?,?,?)";
+					dbConnection = Connect();
+					
+					String sql = "INSERT INTO Customer(FirstName, LastName, StreetAddress, State, Zipcode, Email, SSN) VALUES (?,?,?,?,?,?)";
+					String sql2 = "INSERT INTO Users(UserName, PasswordAsHash) VALUES (?,?)";
+					String sql3 = "INSERT INTO Security_Question(UserInputAnswer) VALUES (?)";
+					
 					preparedStatement = dbConnection.prepareStatement(sql);
+					preparedStatement2 = dbConnection.prepareStatement(sql2);
+					preparedStatement3 = dbConnection.prepareStatement(sql3);
 
 					preparedStatement.setString(1, cust.getFirstName());
 					preparedStatement.setString(2, cust.getLastName());
-					preparedStatement.setString(3, cust.getEmail());
-					preparedStatement.setString(4, cust.getUsername());
-					preparedStatement.setString(5, cust.getStreetAddress());
-					preparedStatement.setString(6, cust.getZipcode());
-					preparedStatement.setString(7, cust.getState());
-					preparedStatement.setString(8, cust.getSecurityQuestion());
-					preparedStatement.setString(9, cust.getPassword());
-					preparedStatement.setString(10, cust.getConfirmPassword());
-					preparedStatement.setString(11, cust.getSocialSecurity());
+					preparedStatement.setString(3, cust.getStreetAddress());
+					preparedStatement.setString(4, cust.getState());
+					preparedStatement.setString(5, cust.getZipcode());
+					preparedStatement.setString(6, cust.getEmail());
+					preparedStatement.setString(7, cust.getSocialSecurity());
+					
+					preparedStatement2.setString(1, cust.getUsername());
+					preparedStatement2.setString(2, cust.getPassword());
+					
+					preparedStatement3.setString(1, cust.getSecurityQuestion());
+					
+					//preparedStatement.setString(10, cust.getConfirmPassword());
+					
 
 					preparedStatement.executeUpdate();
 					dbConnection.close();
@@ -197,8 +208,8 @@ public class RegistrationScreen extends Application {
 	public static Connection Connect() {
 		Connection con = null;
 		try {
-			Class.forName("com.mysql.jdbc.Driver");
-			con = (Connection) DriverManager.getConnection("jdbc:mysql://127.0.0.1:3306/CIS3270", "root", "Tsiknus41");
+			//Class.forName("com.mysql.jdbc.Driver");
+			con = (Connection) DriverManager.getConnection("jdbc:mysql://localhost:3306/java_project_database_master", "root", "Adeftday0302!?");
 		} catch (Exception e) {
 			System.out.println("Could not connect");
 		}

@@ -9,39 +9,46 @@ import javafx.stage.Stage;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
-/**
- * Example of displaying a splash page for a standalone JavaFX application
- */
-public class SplashScreen extends Application {
-	public static void main(String[] args) {
-		Application.launch(args);
+public class SplashScreen {
 
-	}
+	public static class ShowImage extends Application {
+		@Override // Override the start method in the Application class
+		public void start(Stage primaryStage) {
 
-	@Override
-	public void start(Stage primaryStage) throws Exception {
-		// TODO Auto-generated method stub
-		Pane pane = new HBox(10);
-		pane.setPadding(new Insets(0));
-		Image image = new Image("assets/flightfinder.png");
-		pane.getChildren().add(new ImageView(image));
+			// Create a pane to hold the image views
+			Pane pane = new HBox(10);
+			pane.setPadding(new Insets(0));
+			Image image = new Image("https://i.imgur.com/S2wM4a1.png");
+			pane.getChildren().add(new ImageView(image));
 
-		// Create a scene and place it in the stage
-		Scene scene = new Scene(pane);
+			// Create a scene and place it in the stage
+			Scene scene = new Scene(pane);
 
-		// Set the title
-		primaryStage.setTitle("Welcome to BestFlights4U");
-		primaryStage.setScene(scene);
-		primaryStage.show();
-		try {
-			Thread.sleep(3000);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
+			// Set the title
+			primaryStage.setTitle("Loading...");
+			primaryStage.setScene(scene);
+			primaryStage.show();
+			try {
+				Thread.sleep(3000);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+
+			LoginScreen login = new LoginScreen();
+
+			try {
+				login.start(primaryStage);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
 		}
 
-		LoginScreen login = new LoginScreen();
+		public static void main(String[] args) {
+			Application.launch(args);
 
-		login.start(primaryStage);
-
+		}
 	}
+
 }
