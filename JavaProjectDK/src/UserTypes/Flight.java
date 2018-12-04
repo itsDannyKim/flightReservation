@@ -13,9 +13,10 @@ public class Flight {
 	private String ArrivalTime;
 	private String carrier;
 	private int currentPassengers;
+	private int Price;
 
 	public Flight(int FlightId, String Carrier, String DepartingCity, String ArrivingCity, String DepartingTime,
-			String ArrivalTime, String DepartingDate, String ArrivalDate, int currentPassengers, int PassengerLimit) {
+			String ArrivalTime, String DepartingDate, String ArrivalDate, int currentPassengers, int PassengerLimit, int Price) {
 
 		this.FlightId = FlightId;
 		this.DepartingDate = DepartingDate;
@@ -141,6 +142,14 @@ public class Flight {
 
 	public void setPassengerLimit(int passengerLimit) {
 		PassengerLimit = passengerLimit;
+	}
+
+	public int getPrice() {
+		return Price;
+	}
+
+	public void setPrice(int price) {
+		Price = price;
 	}
 
 }
