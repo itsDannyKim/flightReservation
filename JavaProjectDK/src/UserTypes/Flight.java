@@ -28,6 +28,10 @@ public class Flight {
 		this.ArrivalTime = ArrivalTime;
 	}
 
+	public Flight() {
+		// TODO Auto-generated constructor stub
+	}
+
 	public int getFlightId() {
 
 		return FlightId;
