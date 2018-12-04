@@ -148,7 +148,7 @@ public class RegistrationScreen extends Application {
 					cust.setSocialSecurity(SocialSecurity.getText());
 					dbConnection = Connect();
 					
-					String sql = "INSERT INTO Customer(FirstName, LastName, StreetAddress, State, Zipcode, Email, SSN) VALUES (?,?,?,?,?,?)";
+					String sql = "INSERT INTO Customer(FirstName, LastName, StreetAddress, State, Zipcode, Email, SSN) VALUES (?,?,?,?,?,?,?)";
 					String sql2 = "INSERT INTO Users(UserName, PasswordAsHash) VALUES (?,?)";
 					String sql3 = "INSERT INTO Security_Question(UserInputAnswer) VALUES (?)";
 					
