@@ -30,7 +30,6 @@ import UserTypes.Flight;
 
 public class SearchAFlightAdmin extends Application {
 
-
 	TextField Carrier = new TextField();
 	TextField DepartingCity = new TextField();
 	TextField ArrivingCity = new TextField();
@@ -140,9 +139,10 @@ public class SearchAFlightAdmin extends Application {
 		searchNow.setOnAction(e -> goSearch());
 
 		// Create a 'Book" button
-		Button bookIt = new Button();
+		/*Button bookIt = new Button();
 		bookIt.setText("Book This Flight");
-		GridPane.setConstraints(bookIt, 3, 10);
+		bookIt.setOnAction(e -> bookFlight());
+		GridPane.setConstraints(bookIt, 3, 10);*/
 
 		// Creates 'Log Out' button to go back to 'Login Screen'
 		Button btnLogOut = new Button("Log Out");
@@ -155,7 +155,7 @@ public class SearchAFlightAdmin extends Application {
 				el.printStackTrace();
 			}
 		});
-		
+
 		Button btnDelete = new Button("Delete Flight");
 		GridPane.setConstraints(btnDelete, 0, 10);
 		btnLogOut.setOnAction(e -> {
@@ -165,7 +165,7 @@ public class SearchAFlightAdmin extends Application {
 				el.printStackTrace();
 			}
 		});
-		
+
 		Button btnAdminAdd = new Button("Add Flight");
 		GridPane.setConstraints(btnAdminAdd, 4, 10);
 		btnAdminAdd.setOnAction(e -> {
@@ -177,20 +177,21 @@ public class SearchAFlightAdmin extends Application {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
 				}
-				
+
 				Connection myConn = connect();
-				
+
 				String query1 = "SELECT * FROM Flight";
 				PreparedStatement myStat1 = myConn.prepareStatement(query1);
 				ResultSet rs1;
 				rs1 = myStat1.executeQuery();
-				
+
 				while (rs1.next()) {
 
-					flights.add(new Flight(rs1.getInt("FlightId"), rs1.getString("Carrier"), rs1.getString("DepartingCity"),
-							rs1.getString("ArrivingCity"), rs1.getString("DepartingTime"), rs1.getString("ArrivalTime"),
-							rs1.getString("DepartingDate"), rs1.getString("ArrivalDate"), rs1.getInt("currentPassengers"),
-							rs1.getInt("PassengerLimit"), rs1.getInt("Price")));
+					flights.add(new Flight(rs1.getInt("FlightId"), rs1.getString("Carrier"),
+							rs1.getString("DepartingCity"), rs1.getString("ArrivingCity"),
+							rs1.getString("DepartingTime"), rs1.getString("ArrivalTime"),
+							rs1.getString("DepartingDate"), rs1.getString("ArrivalDate"),
+							rs1.getInt("currentPassengers"), rs1.getInt("PassengerLimit"), rs1.getInt("Price")));
 
 					searchResults.setItems(flights);
 
@@ -204,6 +205,20 @@ public class SearchAFlightAdmin extends Application {
 				e2.printStackTrace();
 			}
 		});
+		// Create a 'Book" button
+		Button bookIt = new Button();
+		bookIt.setText("Book This Flight");
+		bookIt.setOnAction(e -> bookFlight());
+		
+		// Create a 'Book" button
+		Button unbookIt = new Button();
+		unbookIt.setText("Unbook This Flight");
+		unbookIt.setOnAction(e -> unbookFlight());
+		
+		/*Button Update = new Button();
+		bookIt.setText("Update");
+		bookIt.setOnAction(e -> System.out.println("Update flight information"));*/
+
 		// Add top menu
 		HBox topMenu = new HBox();
 		topMenu.setPadding(new Insets(10, 10, 10, 10));
@@ -212,9 +227,9 @@ public class SearchAFlightAdmin extends Application {
 
 		// Add bottom menu
 		HBox bottomMenu = new HBox();
-		bottomMenu.setPadding(new Insets(10, 10, 10, 10));
+		bottomMenu.setPadding(new Insets(20, 20, 20, 20));
 		bottomMenu.setSpacing(10);
-		bottomMenu.getChildren().addAll(btnLogOut, bookIt, btnAdminAdd,btnDelete);
+		bottomMenu.getChildren().addAll(btnLogOut, bookIt, unbookIt, btnAdminAdd, btnDelete);
 
 		// Create the VBox, stack them!
 		VBox box = new VBox();
@@ -391,10 +406,71 @@ public class SearchAFlightAdmin extends Application {
 		return methodConnection;
 	}
 
-	private void removeButtonClicked() {
+	public void unbookFlight() {
 
-		searchResults.getItems().removeAll(searchResults.getSelectionModel().getSelectedItem());
+		new AlertBox();
+		AlertBox.display("Add a flight", "Booking Successfully Removed!");
 
+	}
+
+	public void bookFlight() {
+		ObservableList<Flight> flights = FXCollections.observableArrayList();
+		Flight selectedFlight = searchResults.getSelectionModel().getSelectedItem();
+
+		/*
+		 * if (bookedFlights != null) { for (int i = 0; i < bookedFlights.size() + 1;
+		 * i++) {
+		 * 
+		 * if (selectedFlight.get(0).getDepartingDate().equals(bookedFlights.get(i).
+		 * getDepartingDate())) { new AlertBox(); AlertBox.display("Add a Flight",
+		 * "Booking Unsuccessful!"); break; } }
+		 * 
+		 * }
+		 */
+
+		Connection dbConnection = null;
+		PreparedStatement preparedStatement = null;
+
+		try {
+
+			dbConnection = connect();
+
+			String checkbooking = "Select FlightID FROM Customer WHERE FlightID NOT NULL";
+			PreparedStatement myStat1 = dbConnection.prepareStatement(checkbooking);
+			ResultSet rs2;
+			rs2 = myStat1.executeQuery();
+
+			String fid2 = selectedFlight.getFlightId() + "";
+
+			String fid = rs2.getInt("FlightID") + "";
+			while (rs2.next()) {
+				if (fid2 != fid) {
+					String sql = "INSERT INTO Customer(FlightID) VALUES(selectedFlight.getFlightId())";
+
+					PreparedStatement myStat = dbConnection.prepareStatement(sql);
+					ResultSet rs1;
+					rs1 = myStat.executeQuery();
+
+					myStat.executeUpdate();
+					dbConnection.close();
+					myStat.close();
+
+					AlertBox.display("Booked!", "Flight successfully booked");
+				} else if (fid2 == fid) {
+					AlertBox.display("Not Booked", "Flight already booked");
+
+				} else {
+					AlertBox.display("Unsuccessful", "Flight not booked");
+
+				}
+			}
+
+			// preparedStatement.setString(10, cust.getConfirmPassword());
+
+		} catch (SQLException e) {
+
+			e.printStackTrace();
+		}
 	}
 
 	private void deleteButtonClicked() {

@@ -311,17 +311,16 @@ public class SearchAFlight extends Application {
 		ObservableList<Flight> flights = FXCollections.observableArrayList();
 		Flight selectedFlight = searchResults.getSelectionModel().getSelectedItem();
 
-		/*if (bookedFlights != null) {
-			for (int i = 0; i < bookedFlights.size() + 1; i++) {
-
-				if (selectedFlight.get(0).getDepartingDate().equals(bookedFlights.get(i).getDepartingDate())) {
-					new AlertBox();
-					AlertBox.display("Add a Flight", "Booking Unsuccessful!");
-					break;
-				}
-			}
-
-		}*/
+		/*
+		 * if (bookedFlights != null) { for (int i = 0; i < bookedFlights.size() + 1;
+		 * i++) {
+		 * 
+		 * if (selectedFlight.get(0).getDepartingDate().equals(bookedFlights.get(i).
+		 * getDepartingDate())) { new AlertBox(); AlertBox.display("Add a Flight",
+		 * "Booking Unsuccessful!"); break; } }
+		 * 
+		 * }
+		 */
 
 		Connection dbConnection = null;
 		PreparedStatement preparedStatement = null;
@@ -334,9 +333,9 @@ public class SearchAFlight extends Application {
 			PreparedStatement myStat1 = dbConnection.prepareStatement(checkbooking);
 			ResultSet rs2;
 			rs2 = myStat1.executeQuery();
-			
-			String fid2 = selectedFlight.getFlightId()+ "";
-			
+
+			String fid2 = selectedFlight.getFlightId() + "";
+
 			String fid = rs2.getInt("FlightID") + "";
 			while (rs2.next()) {
 				if (fid2 != fid) {
@@ -345,23 +344,22 @@ public class SearchAFlight extends Application {
 					PreparedStatement myStat = dbConnection.prepareStatement(sql);
 					ResultSet rs1;
 					rs1 = myStat.executeQuery();
-					
+
 					myStat.executeUpdate();
 					dbConnection.close();
 					myStat.close();
-					
+
 					AlertBox.display("Booked!", "Flight successfully booked");
-				}else if(fid2==fid){
+				} else if (fid2 == fid) {
 					AlertBox.display("Not Booked", "Flight already booked");
 
-				}else{
+				} else {
 					AlertBox.display("Unsuccessful", "Flight not booked");
 
 				}
 			}
 
 			// preparedStatement.setString(10, cust.getConfirmPassword());
-
 
 		} catch (SQLException e) {
 
