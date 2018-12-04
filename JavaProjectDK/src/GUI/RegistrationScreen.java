@@ -128,8 +128,6 @@ public class RegistrationScreen extends Application {
 		btnSubmit.setOnAction(e -> {
 			Connection dbConnection = null;
 			PreparedStatement preparedStatement = null;
-			PreparedStatement preparedStatement2 = null;
-			PreparedStatement preparedStatement3 = null;
 
 			try {
 				if (checkUser(Username) == true && checkPass(Password, ConfirmPassword) == true) {
@@ -148,13 +146,10 @@ public class RegistrationScreen extends Application {
 					cust.setSocialSecurity(SocialSecurity.getText());
 					dbConnection = Connect();
 					
-					String sql = "INSERT INTO Customer(FirstName, LastName, StreetAddress, State, Zipcode, Email, SSN) VALUES (?,?,?,?,?,?,?)";
-					String sql2 = "INSERT INTO Users(UserName, PasswordAsHash) VALUES (?,?)";
-					String sql3 = "INSERT INTO Security_Question(UserInputAnswer) VALUES (?)";
+					String sql = "INSERT INTO Customer(FirstName, LastName, StreetAddress, State, Zipcode, Email, SSN, UserName, "
+							+ "PasswordAsHash, UserInputAnswer) VALUES (?,?,?,?,?,?,?,?,?,?)";
 					
 					preparedStatement = dbConnection.prepareStatement(sql);
-					preparedStatement2 = dbConnection.prepareStatement(sql2);
-					preparedStatement3 = dbConnection.prepareStatement(sql3);
 
 					preparedStatement.setString(1, cust.getFirstName());
 					preparedStatement.setString(2, cust.getLastName());
@@ -163,11 +158,9 @@ public class RegistrationScreen extends Application {
 					preparedStatement.setString(5, cust.getZipcode());
 					preparedStatement.setString(6, cust.getEmail());
 					preparedStatement.setString(7, cust.getSocialSecurity());
-					
-					preparedStatement2.setString(1, cust.getUsername());
-					preparedStatement2.setString(2, cust.getPassword());
-					
-					preparedStatement3.setString(1, cust.getSecurityQuestion());
+					preparedStatement.setString(8, cust.getUsername());
+					preparedStatement.setString(9, cust.getPassword());
+					preparedStatement.setString(10, cust.getSecurityQuestion());
 					
 					//preparedStatement.setString(10, cust.getConfirmPassword());
 					

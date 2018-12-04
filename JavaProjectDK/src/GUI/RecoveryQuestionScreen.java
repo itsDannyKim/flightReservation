@@ -95,15 +95,11 @@ public class RecoveryQuestionScreen extends Application {
 				Statement myStat = myConn.createStatement();
 				// execute a query
 				ResultSet myRs;
-				ResultSet myRs2;
-				String sqlUserCheck = "SELECT UserInputAnswer FROM Security_Question WHERE users.UserID = Security_Question.QuestionID"
-						+ "AND UserName = '" + user + "'";
-				
-				String sqlPassWord = "SELECT PasswordAsHash FROM users WHERE users.UserID = Security_Question.QuestionID"
-						+ "AND UserName = '" + user + "'";
+			
+				String sqlUserCheck = "SELECT UserInputAnswer, PasswordAsHash FROM Customer WHERE UserName = '" + user + "'";
 				
 				myRs = myStat.executeQuery(sqlUserCheck);
-				myRs2 = myStat.executeQuery(sqlPassWord);
+				
 
 				// Creates a variable for future checking
 				int count = 0;
@@ -116,7 +112,7 @@ public class RecoveryQuestionScreen extends Application {
 					secAnswer = myRs.getString("UserInputAnswer");
 
 					// stores password from database
-					password = myRs2.getString("Password");
+					password = myRs.getString("Password");
 				}
 				myStat.close();
 				myRs.close();

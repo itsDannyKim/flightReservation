@@ -1,5 +1,9 @@
 package GUI;
 
+import java.io.InputStream;
+
+import javax.imageio.ImageIO;
+
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.layout.HBox;
@@ -18,7 +22,7 @@ public class SplashScreen {
 			// Create a pane to hold the image views
 			Pane pane = new HBox(10);
 			pane.setPadding(new Insets(0));
-			Image image = new Image("https://i.imgur.com/S2wM4a1.png");
+			Image image = new Image("flights.jpg");
 			pane.getChildren().add(new ImageView(image));
 
 			// Create a scene and place it in the stage
@@ -32,6 +36,7 @@ public class SplashScreen {
 				Thread.sleep(3000);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
+
 			}
 
 			LoginScreen login = new LoginScreen();

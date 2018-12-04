@@ -96,13 +96,13 @@ public class LoginScreen extends Application {
 		grid.add(hbBtn1, 1, 4);
 		btnLogin.setOnAction(e -> {
 			SearchAFlight searchFlight = new SearchAFlight();
-			// Main_admin mainad = new Main_admin();
+			SearchAFlightAdmin searchFlightAdmin = new SearchAFlightAdmin();
 			try {
 				if (checkUsername(userTextField, primaryStage) == true && checkPassword(pwBox, primaryStage) == true) {
 					searchFlight.start(primaryStage);
 
 				} else if (userTextField.getText().equals("Admin") && pwBox.getText().equals("Admin")) {
-					// mainad.start(primaryStage);
+					searchFlightAdmin.start(primaryStage);
 				} else
 					AlertBox.display("Error",
 							"Incorrect Login Credentials.  Please try again or click Forgot Password");
@@ -156,7 +156,7 @@ public class LoginScreen extends Application {
 			// starts the connection and runs sql query to select the usernames
 			// that are notadmin
 			dbConnection = Connect();
-			String sql = "SELECT UserName FROM users WHERE UserName NOT LIKE 'Admin';";
+			String sql = "SELECT UserName FROM Customer WHERE UserName NOT LIKE 'Admin';";
 
 			preparedStatement = dbConnection.prepareStatement(sql);
 			ResultSet rs = preparedStatement.executeQuery();
@@ -183,7 +183,7 @@ public class LoginScreen extends Application {
 
 		try {
 			dbConnection = Connect();
-			String sql = "SELECT PasswordAsHash FROM users WHERE PasswordAsHash NOT LIKE 'Admin'";
+			String sql = "SELECT PasswordAsHash FROM Customer WHERE PasswordAsHash NOT LIKE 'Admin'";
 			preparedStatement = dbConnection.prepareStatement(sql);
 			ResultSet rs = preparedStatement.executeQuery();
 
