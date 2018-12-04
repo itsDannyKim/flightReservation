@@ -1,151 +1,381 @@
 package GUI;
 
+import javafx.application.Application;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
+import javafx.scene.Scene;
+import javafx.scene.control.Button;
+import javafx.scene.control.ChoiceBox;
+import javafx.scene.control.Label;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
+import javafx.scene.control.TextField;
+import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
+import javafx.stage.Stage;
+
+// JDBC imports
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import javafx.application.Application;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
-import javafx.geometry.Insets;
-import javafx.scene.Scene;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.Label;
-import javafx.scene.control.SelectionModel;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
-import javafx.scene.control.TextField;
-import javafx.scene.control.TextFormatter;
-import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.VBox;
-import javafx.scene.text.Font;
-import javafx.stage.Stage;
-import javafx.util.converter.NumberStringConverter;
-import javafx.application.Application;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
-import javafx.geometry.Insets;
-import javafx.scene.Group;
-import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableColumn.CellEditEvent;
-import javafx.scene.control.TableView;
-import javafx.scene.control.TextField;
-import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.control.cell.TextFieldTableCell;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.VBox;
-import javafx.scene.text.Font;
-import javafx.stage.Stage;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-
+// Class imports
 import UserTypes.Flight;
 
 public class SearchAFlightAdmin extends Application {
 
-	private TableView<Flight> table = new TableView<Flight>();
-	// private final ObservableList<Flight> data = FXCollections.observableArrayList
-	final HBox hb = new HBox();
+
+	TextField Carrier = new TextField();
+	TextField DepartingCity = new TextField();
+	TextField ArrivingCity = new TextField();
+	TextField DepartingTime = new TextField();
+	TextField ArrivalTime = new TextField();
+	TextField DepartingDate = new TextField();
+	TextField ArrivalDate = new TextField();
+	TextField currentPassengers = new TextField();
+	TextField PassengerLimit = new TextField();
+	TextField Price = new TextField();
+	ObservableList<Flight> flights = FXCollections.observableArrayList();
+	Scene SearchFlightScene;
+	ChoiceBox<String> searchByOptions;
+	TextField searchCriteria;
+	TableView<Flight> searchResults;
 
 	public static void main(String[] args) {
-		launch(args);
+		Application.launch(args);
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public void start(Stage stage) {
-		Scene scene = new Scene(new Group());
-		stage.setTitle("Table View Sample");
-		stage.setWidth(800);
-		stage.setHeight(550);
+	public void start(Stage primaryStage) throws Exception {
 
-		final Label label = new Label("Address Book");
-		label.setFont(new Font("Arial", 20));
+		// This sets the name of the window title
+		primaryStage.setTitle("Search a Flight");
 
-		table.setEditable(true);
+		// This creates a grid lay out.
+		GridPane gridLayout = new GridPane();
+		gridLayout.setPadding(new Insets(10, 10, 10, 10));
+		gridLayout.setVgap(8);
+		gridLayout.setHgap(10);
 
-		TableColumn FlightIdCol = new TableColumn("FlightId");
-		FlightIdCol.setMinWidth(100);
-		FlightIdCol.setCellValueFactory(new PropertyValueFactory<Flight, Integer>("FlightId"));
-		FlightIdCol.setCellFactory(TextFieldTableCell.forTableColumn());
-		FlightIdCol.setOnEditCommit(new EventHandler<CellEditEvent<Flight, Integer>>() {
-			@Override
-			public void handle(CellEditEvent<Flight, Integer> t) {
-				((Flight) t.getTableView().getItems().get(t.getTablePosition().getRow())).setFlightId(t.getNewValue());
+		// The following code creates the tables
+		TableColumn<Flight, Integer> flightIDColumn = new TableColumn<>("Flight ID");
+		flightIDColumn.setMinWidth(100);
+		flightIDColumn.setCellValueFactory(new PropertyValueFactory<>("FlightId"));
+
+		TableColumn<Flight, String> carrierColumn = new TableColumn<>("Carrier");
+		carrierColumn.setMinWidth(200);
+		carrierColumn.setCellValueFactory(new PropertyValueFactory<>("carrier"));
+
+		TableColumn<Flight, String> departingDateColumn = new TableColumn<>("Departing Date");
+		departingDateColumn.setMinWidth(200);
+		departingDateColumn.setCellValueFactory(new PropertyValueFactory<>("DepartingDate"));
+
+		TableColumn<Flight, String> arrivalDateColumn = new TableColumn<>("Arrival Date");
+		arrivalDateColumn.setMinWidth(200);
+		arrivalDateColumn.setCellValueFactory(new PropertyValueFactory<>("ArrivalDate"));
+
+		TableColumn<Flight, String> departingCityColumn = new TableColumn<>("Departing City");
+		departingCityColumn.setMinWidth(200);
+		departingCityColumn.setCellValueFactory(new PropertyValueFactory<>("DepartingCity"));
+
+		TableColumn<Flight, String> arrivingCityColumn = new TableColumn<>("Arriving City");
+		arrivingCityColumn.setMinWidth(200);
+		arrivingCityColumn.setCellValueFactory(new PropertyValueFactory<>("ArrivingCity"));
+
+		TableColumn<Flight, String> arrivalTimeColumn = new TableColumn<>("Arrival Time");
+		arrivalTimeColumn.setMinWidth(200);
+		arrivalTimeColumn.setCellValueFactory(new PropertyValueFactory<>("ArrivalTime"));
+
+		TableColumn<Flight, String> departingTimeColumn = new TableColumn<>("Departing Time");
+		departingTimeColumn.setMinWidth(200);
+		departingTimeColumn.setCellValueFactory(new PropertyValueFactory<>("DepartingTime"));
+
+		TableColumn<Flight, Integer> currentPassengersColumn = new TableColumn<>("Current Passengers");
+		currentPassengersColumn.setMinWidth(100);
+		currentPassengersColumn.setCellValueFactory(new PropertyValueFactory<>("currentPassengers"));
+
+		TableColumn<Flight, Integer> passengerLimitColumn = new TableColumn<>("Passenger Limit");
+		passengerLimitColumn.setMinWidth(100);
+		passengerLimitColumn.setCellValueFactory(new PropertyValueFactory<>("PassengerLimit"));
+
+		TableColumn<Flight, Integer> priceColumn = new TableColumn<>("Price");
+		priceColumn.setMinWidth(100);
+		priceColumn.setCellValueFactory(new PropertyValueFactory<>("Price"));
+
+		searchResults = new TableView<>();
+		searchResults.setItems(getFlights());
+		searchResults.getColumns().addAll(flightIDColumn, carrierColumn, departingDateColumn, arrivalDateColumn,
+				departingCityColumn, arrivingCityColumn, arrivalTimeColumn, departingTimeColumn,
+				currentPassengersColumn, passengerLimitColumn, priceColumn);
+
+		// set table location on grid???
+		GridPane.setConstraints(searchResults, 2, 2);
+
+		// Create the 'Search by' label
+		Label searchByLabel = new Label("Search by: ");
+		GridPane.setConstraints(searchByLabel, 0, 0);
+
+		// Create the options ChoiceBox
+		searchByOptions = new ChoiceBox<>();
+		searchByOptions.getItems().addAll("From City", "To City", "Date", "Time");
+		searchByOptions.setValue("From City");
+		GridPane.setConstraints(searchByOptions, 1, 0);
+
+		// Create a text field to input criteria
+		searchCriteria = new TextField();
+		searchCriteria.setPromptText("Enter your criteria");
+		GridPane.setConstraints(searchCriteria, 2, 0);
+
+		// Create a 'Search Now' button
+		Button searchNow = new Button();
+		searchNow.setText("Go!");
+		GridPane.setConstraints(searchNow, 3, 0);
+		searchNow.setOnAction(e -> goSearch());
+
+		// Create a 'Book" button
+		Button bookIt = new Button();
+		bookIt.setText("Book This Flight");
+		GridPane.setConstraints(bookIt, 3, 10);
+
+		// Creates 'Log Out' button to go back to 'Login Screen'
+		Button btnLogOut = new Button("Log Out");
+		GridPane.setConstraints(btnLogOut, 0, 10);
+		btnLogOut.setOnAction(e -> {
+			try {
+				LoginScreen screen = new LoginScreen();
+				screen.start(primaryStage);
+			} catch (Exception el) {
+				el.printStackTrace();
 			}
 		});
+		
+		Button btnDelete = new Button("Delete Flight");
+		GridPane.setConstraints(btnDelete, 0, 10);
+		btnLogOut.setOnAction(e -> {
+			try {
+				deleteButtonClicked();
+			} catch (Exception el) {
+				el.printStackTrace();
+			}
+		});
+		
+		Button btnAdminAdd = new Button("Add Flight");
+		GridPane.setConstraints(btnAdminAdd, 4, 10);
+		btnAdminAdd.setOnAction(e -> {
+			try {
+				try {
+					AddFlightScreen screen = new AddFlightScreen();
+					screen.start(primaryStage);
+				} catch (Exception e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+				
+				Connection myConn = connect();
+				
+				String query1 = "SELECT * FROM Flight";
+				PreparedStatement myStat1 = myConn.prepareStatement(query1);
+				ResultSet rs1;
+				rs1 = myStat1.executeQuery();
+				
+				while (rs1.next()) {
 
-		/*
-		 * TableColumn lastNameCol = new TableColumn("Last Name");
-		 * lastNameCol.setMinWidth(100); lastNameCol.setCellValueFactory(new
-		 * PropertyValueFactory<Flight, String>("lastName"));
-		 * lastNameCol.setCellFactory(TextFieldTableCell.forTableColumn());
-		 * lastNameCol.setOnEditCommit(new EventHandler<CellEditEvent<Flight, String>>()
-		 * {
-		 * 
-		 * @Override public void handle(CellEditEvent<Flight, String> t) { ((Flight)
-		 * t.getTableView().getItems().get(t.getTablePosition().getRow())).setLastName(t
-		 * .getNewValue()); } });
-		 * 
-		 * TableColumn emailCol = new TableColumn("Email"); emailCol.setMinWidth(200);
-		 * emailCol.setCellValueFactory(new PropertyValueFactory<Flight,
-		 * String>("email"));
-		 * emailCol.setCellFactory(TextFieldTableCell.forTableColumn());
-		 * emailCol.setOnEditCommit(new EventHandler<CellEditEvent<Flight, String>>() {
-		 * 
-		 * @Override public void handle(CellEditEvent<Flight, String> t) { ((Flight)
-		 * t.getTableView().getItems().get(t.getTablePosition().getRow())).setEmail(t.
-		 * getNewValue()); } });
-		 */
+					flights.add(new Flight(rs1.getInt("FlightId"), rs1.getString("Carrier"), rs1.getString("DepartingCity"),
+							rs1.getString("ArrivingCity"), rs1.getString("DepartingTime"), rs1.getString("ArrivalTime"),
+							rs1.getString("DepartingDate"), rs1.getString("ArrivalDate"), rs1.getInt("currentPassengers"),
+							rs1.getInt("PassengerLimit"), rs1.getInt("Price")));
 
-		// table.setItems(data);
-		table.getColumns().addAll(FlightIdCol);
+					searchResults.setItems(flights);
 
-		final TextField addFlightIdCol = new TextField();
-		addFlightIdCol.setPromptText("FlightID");
-		addFlightIdCol.setMaxWidth(FlightIdCol.getPrefWidth());
-		/*
-		 * final TextField addLastName = new TextField();
-		 * addLastName.setMaxWidth(lastNameCol.getPrefWidth());
-		 * addLastName.setPromptText("Last Name"); final TextField addEmail = new
-		 * TextField(); addEmail.setMaxWidth(emailCol.getPrefWidth());
-		 * addEmail.setPromptText("Email");
-		 */
+				}
 
-		/*
-		 * final Button addButton = new Button("Add"); addButton.setOnAction(new
-		 * EventHandler<ActionEvent>() {
-		 * 
-		 * @Override public void handle(ActionEvent e) { data.add(new
-		 * Flight(addFirstName.getText(), addLastName.getText(), addEmail.getText()));
-		 * addFirstName.clear(); addLastName.clear(); addEmail.clear(); } });
-		 */
+				myConn.close();
+				myStat1.close();
+				rs1.close();
+			} catch (SQLException e2) {
 
-		hb.getChildren().addAll(addFlightIdCol);
-		hb.setSpacing(3);
+				e2.printStackTrace();
+			}
+		});
+		// Add top menu
+		HBox topMenu = new HBox();
+		topMenu.setPadding(new Insets(10, 10, 10, 10));
+		topMenu.setSpacing(10);
+		topMenu.getChildren().addAll(searchByLabel, searchByOptions, searchCriteria, searchNow);
 
-		final VBox vbox = new VBox();
-		vbox.setSpacing(5);
-		vbox.setPadding(new Insets(10, 0, 0, 10));
-		vbox.getChildren().addAll(label, table, hb);
+		// Add bottom menu
+		HBox bottomMenu = new HBox();
+		bottomMenu.setPadding(new Insets(10, 10, 10, 10));
+		bottomMenu.setSpacing(10);
+		bottomMenu.getChildren().addAll(btnLogOut, bookIt, btnAdminAdd,btnDelete);
 
-		((Group) scene.getRoot()).getChildren().addAll(vbox);
+		// Create the VBox, stack them!
+		VBox box = new VBox();
+		box.getChildren().addAll(topMenu, searchResults, bottomMenu);
 
-		stage.setScene(scene);
-		stage.show();
+		// This creates the scene
+		SearchFlightScene = new Scene(box);
+
+		primaryStage.setScene(SearchFlightScene);
+		primaryStage.show();
 	}
 
+	// Method to search flights
+	public void goSearch() {
+
+		// ArrayList to store flights
+		ObservableList<Flight> flights = FXCollections.observableArrayList();
+
+		// Create connection once
+		Connection dbConn = null;
+		dbConn = connect();
+
+		// Write out query
+		String query;
+
+		// Create a query Statement
+		PreparedStatement myStmt = null;
+
+		// Execute the query
+		ResultSet myResult;
+
+		switch (searchByOptions.getSelectionModel().getSelectedItem()) {
+
+		case "From City":
+			try {
+				query = "SELECT * FROM FLIGHT WHERE DepartingCity = '" + searchCriteria.getText() + "'";
+				myStmt = dbConn.prepareStatement(query);
+				myResult = myStmt.executeQuery();
+
+				// Add Flight object to ObservableList flights
+				while (myResult.next()) {
+					flights.add(new Flight(myResult.getInt("FlightID"), myResult.getString("Carrier"),
+							myResult.getString("DepartingCity"), myResult.getString("ArrivingCity"),
+							myResult.getString("DepartingTime"), myResult.getString("ArrivalTime"),
+							myResult.getString("DepartingDate"), myResult.getString("ArrivalDate"), 0,
+							myResult.getInt("PassengerLimit"), myResult.getInt("Price")));
+					searchResults.setItems(flights);
+				}
+
+				myStmt.close();
+				myResult.close();
+
+			} catch (Exception ex) {
+				ex.printStackTrace();
+			}
+			break;
+
+		case "To City":
+			try {
+				query = "SELECT * FROM FLIGHT WHERE ArrivingCity = '" + searchCriteria.getText() + "'";
+				myStmt = dbConn.prepareStatement(query);
+				myResult = myStmt.executeQuery();
+
+				// Add Flight object to ObservableList flights
+				while (myResult.next()) {
+					flights.add(new Flight(myResult.getInt("FlightID"), myResult.getString("Carrier"),
+							myResult.getString("DepartingCity"), myResult.getString("ArrivingCity"),
+							myResult.getString("DepartingTime"), myResult.getString("ArrivalTime"),
+							myResult.getString("DepartingDate"), myResult.getString("ArrivalDate"), 0,
+							myResult.getInt("PassengerLimit"), myResult.getInt("Price")));
+					searchResults.setItems(flights);
+				}
+
+				myStmt.close();
+				myResult.close();
+
+			} catch (Exception ex) {
+				ex.printStackTrace();
+			}
+			break;
+
+		case "Date":
+			try {
+				query = "SELECT * FROM FLIGHT WHERE DepartingDate LIKE '" + searchCriteria.getText().charAt(0) + "/%'";
+				myStmt = dbConn.prepareStatement(query);
+				myResult = myStmt.executeQuery();
+
+				// Add Flight object to ObservableList flights
+				while (myResult.next()) {
+					flights.add(new Flight(myResult.getInt("FlightID"), myResult.getString("Carrier"),
+							myResult.getString("DepartingCity"), myResult.getString("ArrivingCity"),
+							myResult.getString("DepartingTime"), myResult.getString("ArrivalTime"),
+							myResult.getString("DepartingDate"), myResult.getString("ArrivalDate"), 0,
+							myResult.getInt("PassengerLimit"), myResult.getInt("Price")));
+					searchResults.setItems(flights);
+				}
+
+				myStmt.close();
+				myResult.close();
+
+			} catch (Exception ex) {
+				ex.printStackTrace();
+			}
+			break;
+
+		case "Time":
+			try {
+				query = "SELECT * FROM FLIGHT WHERE DepartingTime LIKE'" + searchCriteria.getText().charAt(0) + "%'";
+				myStmt = dbConn.prepareStatement(query);
+				myResult = myStmt.executeQuery();
+
+				// Add Flight object to ObservableList flights
+				while (myResult.next()) {
+					flights.add(new Flight(myResult.getInt("FlightID"), myResult.getString("Carrier"),
+							myResult.getString("DepartingCity"), myResult.getString("ArrivingCity"),
+							myResult.getString("DepartingTime"), myResult.getString("ArrivalTime"),
+							myResult.getString("DepartingDate"), myResult.getString("ArrivalDate"), 0,
+							myResult.getInt("PassengerLimit"), myResult.getInt("Price")));
+					searchResults.setItems(flights);
+				}
+
+				myStmt.close();
+				myResult.close();
+
+			} catch (Exception ex) {
+				ex.printStackTrace();
+			}
+			break;
+		}
+	}
+
+	public ObservableList<Flight> getFlights() {
+		ObservableList<Flight> flights = FXCollections.observableArrayList();
+
+		Connection tempConn = null;
+		String query = "SELECT * FROM FLIGHT";
+
+		try {
+			tempConn = connect();
+			PreparedStatement myStmt = tempConn.prepareStatement(query);
+			ResultSet myResult = myStmt.executeQuery();
+
+			while (myResult.next()) {
+				flights.add(new Flight(myResult.getInt("FlightID"), myResult.getString("Carrier"),
+						myResult.getString("DepartingCity"), myResult.getString("ArrivingCity"),
+						myResult.getString("DepartingTime"), myResult.getString("ArrivalTime"),
+						myResult.getString("DepartingDate"), myResult.getString("ArrivalDate"),
+						myResult.getInt("currentPassengers"), myResult.getInt("PassengerLimit"),
+						myResult.getInt("Price")));
+				searchResults.setItems(flights);
+			}
+
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
+
+		return flights;
+	}
+
+	// This is to shorten the code, instead of declaring a connection in a
+	// try-catch block everytime
 	public Connection connect() {
 
 		Connection methodConnection = null;
@@ -159,19 +389,18 @@ public class SearchAFlightAdmin extends Application {
 		}
 
 		return methodConnection;
-
 	}
 
 	private void removeButtonClicked() {
 
-		table.getItems().removeAll(table.getSelectionModel().getSelectedItem());
+		searchResults.getItems().removeAll(searchResults.getSelectionModel().getSelectedItem());
 
 	}
 
 	private void deleteButtonClicked() {
 
 		ObservableList<Flight> flights = FXCollections.observableArrayList();
-		Flight selectedFlight = table.getSelectionModel().getSelectedItem();
+		Flight selectedFlight = searchResults.getSelectionModel().getSelectedItem();
 
 		Connection myConn;
 		try {
@@ -200,7 +429,7 @@ public class SearchAFlightAdmin extends Application {
 						rs1.getString("DepartingDate"), rs1.getString("ArrivalDate"), rs1.getInt("currentPassengers"),
 						rs1.getInt("PassengerLimit"), rs1.getInt("Price")));
 
-				table.setItems(flights);
+				searchResults.setItems(flights);
 
 			}
 
@@ -214,70 +443,4 @@ public class SearchAFlightAdmin extends Application {
 
 	}
 
-	private void addButtonClicked() {
-
-		ObservableList<Flight> flights = FXCollections.observableArrayList();
-		Flight selectedFlight = table.getSelectionModel().getSelectedItem();
-
-		Connection myConn = null;
-		PreparedStatement preparedStatement = null;
-		try {
-
-			Flight flightadd = new Flight();
-
-			flightadd.setCarrier(Carrier.getText());
-			flightadd.setDepartingCity(DepartingCity.getText());
-			flightadd.setDepartingDate(DepartingDate.getText());
-			flightadd.setDepartingTime(DepartingTime.getText());
-			flightadd.setArrivingCity(ArrivingCity.getText());
-			flightadd.setArrivalDate(ArrivalDate.getText());
-			flightadd.setArrivalTime(ArrivalTime.getText());
-			flightadd.setPassengerLimit(PassengerLimit.getText());
-			flightadd.setPrice(Price.getText());
-
-			myConn = connect();
-
-			String sql = "INSERT INTO Flight(Carrier, DepartingCity, DepartingDate, DepartingTime, ArrivingCity, ArrivalDate, ArrivalTime, PassengerLimit, "
-					+ "Price) VALUES (?,?,?,?,?,?,?,?,?)";
-
-			preparedStatement = myConn.prepareStatement(sql);
-
-			preparedStatement.setString(1, flightadd.getCarrier());
-			preparedStatement.setString(2, flightadd.getDepartingCity());
-			preparedStatement.setString(3, flightadd.getDepartingDate());
-			preparedStatement.setString(4, flightadd.getDepartingTime());
-			preparedStatement.setString(5, flightadd.getArrivingCity());
-			preparedStatement.setString(6, flightadd.getArrivalDate());
-			preparedStatement.setString(7, flightadd.getArrivalTime());
-			preparedStatement.setLong(8, flightadd.getPassengerLimit());
-			preparedStatement.setLong(9, flightadd.getPrice());
-
-			preparedStatement.executeUpdate();
-			preparedStatement.close();
-
-			String query1 = "SELECT * FROM Flight";
-			PreparedStatement myStat1 = myConn.prepareStatement(query1);
-			ResultSet rs1;
-			rs1 = myStat1.executeQuery();
-
-			while (rs1.next()) {
-
-				flights.add(new Flight(rs1.getInt("FlightId"), rs1.getString("Carrier"), rs1.getString("DepartingCity"),
-						rs1.getString("ArrivingCity"), rs1.getString("DepartingTime"), rs1.getString("ArrivalTime"),
-						rs1.getString("DepartingDate"), rs1.getString("ArrivalDate"), rs1.getInt("currentPassengers"),
-						rs1.getInt("PassengerLimit"), rs1.getInt("Price")));
-
-				table.setItems(flights);
-
-			}
-			
-			myConn.close();
-			myStat1.close();
-			rs1.close();
-		} catch (SQLException e) {
-
-			e.printStackTrace();
-		}
-
-	}
 }
