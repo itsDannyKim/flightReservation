@@ -63,7 +63,7 @@ public class ForgotPasswordScreen extends Application{
 			try {
 				// get a connection to the database
 				Connection myConn = DriverManager.getConnection(
-						"jdbc:mysql://localhost:3306/java_project_database_master", "root", "Adeftday0302!?");
+						"jdbc:mysql://localhost:3306/java_project_database_master", "root", "082486dk");
 				// create a statement
 				Statement myStat = myConn.createStatement();
 				// execute a query

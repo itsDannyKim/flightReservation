@@ -86,11 +86,11 @@ public class RecoveryQuestionScreen extends Application {
 		hbbtnSubmit.setAlignment(Pos.BOTTOM_LEFT);
 		hbbtnSubmit.getChildren().add(btnSubmit);
 		grid2.add(hbbtnSubmit, 2, 3);
-		btnHome.setOnAction(e -> {
+		btnSubmit.setOnAction(e -> {
 			try {
 				// get a connection to the database
 				Connection myConn = DriverManager.getConnection("jdbc:mysql://localhost:3306/java_project_database_master",
-						"root", "Adeftday0302!?");
+						"root", "082486dk");
 				// create a statement
 				Statement myStat = myConn.createStatement();
 				// execute a query
@@ -112,19 +112,21 @@ public class RecoveryQuestionScreen extends Application {
 					secAnswer = myRs.getString("UserInputAnswer");
 
 					// stores password from database
-					password = myRs.getString("Password");
+					password = myRs.getString("PasswordAsHash");
 				}
 				myStat.close();
 				myRs.close();
 				myConn.close();
+				
+				userAnswer = answerField.getText();
 
-				if (count == 1 && userAnswer.equals(secAnswer)) {
+				if (userAnswer.equals(secAnswer)) {
 					AlertBox.display("Password", "The password for your account is: " + password);
 
-				} else if (count == 1 && secAnswer != userAnswer) {
+				} else if (secAnswer != userAnswer) {
 					AlertBox.display("Incorrect Answer", "That answer is Incorrect. Please try again.");
 				} else {
-					AlertBox.display("Incorrect Answer", "That answer is incotrrect. Please try again.");
+					AlertBox.display("Incorrect Answer", "That answer is Incorrect. Please try again.");
 				}
 			} catch (Exception el) {
 				el.printStackTrace();

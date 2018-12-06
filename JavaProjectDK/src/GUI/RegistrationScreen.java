@@ -144,6 +144,7 @@ public class RegistrationScreen extends Application {
 					cust.setPassword(Password.getText());
 					//cust.setConfirmPassword(ConfirmPassword.getText());
 					cust.setSocialSecurity(SocialSecurity.getText());
+					
 					dbConnection = Connect();
 					
 					String sql = "INSERT INTO Customer(FirstName, LastName, StreetAddress, State, Zipcode, Email, SSN, UserName, "
@@ -202,7 +203,7 @@ public class RegistrationScreen extends Application {
 		Connection con = null;
 		try {
 			//Class.forName("com.mysql.jdbc.Driver");
-			con = (Connection) DriverManager.getConnection("jdbc:mysql://localhost:3306/java_project_database_master", "root", "Adeftday0302!?");
+			con = (Connection) DriverManager.getConnection("jdbc:mysql://localhost:3306/java_project_database_master", "root", "082486dk");
 		} catch (Exception e) {
 			System.out.println("Could not connect");
 		}
