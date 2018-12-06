@@ -139,7 +139,7 @@ public class LoginScreen extends Application {
 	public static Connection Connect() {
 		Connection con = null;
 		try {
-			con = DriverManager.getConnection("jdbc:mysql://localhost:3306/java_project_database_master", "root", "Adeftday0302!?");
+			con = DriverManager.getConnection("jdbc:mysql://localhost:3306/java_project_database_master", "root", "082486dk");
 		} catch (Exception e) {
 			System.out.println("Can not connect");
 		}
