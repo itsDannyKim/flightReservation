@@ -1,10 +1,13 @@
 package GUI;
 
+// Java FX imports
+import UserTypes.Flight;
 import javafx.application.Application;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
@@ -25,26 +28,18 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+import UserTypes.Customer;
 // Class imports
 import UserTypes.Flight;
 
 public class SearchAFlightAdmin extends Application {
+	int counter;
 
-	TextField Carrier = new TextField();
-	TextField DepartingCity = new TextField();
-	TextField ArrivingCity = new TextField();
-	TextField DepartingTime = new TextField();
-	TextField ArrivalTime = new TextField();
-	TextField DepartingDate = new TextField();
-	TextField ArrivalDate = new TextField();
-	TextField currentPassengers = new TextField();
-	TextField PassengerLimit = new TextField();
-	TextField Price = new TextField();
-	ObservableList<Flight> flights = FXCollections.observableArrayList();
 	Scene SearchFlightScene;
 	ChoiceBox<String> searchByOptions;
 	TextField searchCriteria;
 	TableView<Flight> searchResults;
+	ObservableList<Flight> bookedFlights;
 
 	public static void main(String[] args) {
 		Application.launch(args);
@@ -56,12 +51,6 @@ public class SearchAFlightAdmin extends Application {
 
 		// This sets the name of the window title
 		primaryStage.setTitle("Search a Flight");
-
-		// This creates a grid lay out.
-		GridPane gridLayout = new GridPane();
-		gridLayout.setPadding(new Insets(10, 10, 10, 10));
-		gridLayout.setVgap(8);
-		gridLayout.setHgap(10);
 
 		// The following code creates the tables
 		TableColumn<Flight, Integer> flightIDColumn = new TableColumn<>("Flight ID");
@@ -114,39 +103,69 @@ public class SearchAFlightAdmin extends Application {
 				departingCityColumn, arrivingCityColumn, arrivalTimeColumn, departingTimeColumn,
 				currentPassengersColumn, passengerLimitColumn, priceColumn);
 
-		// set table location on grid???
-		GridPane.setConstraints(searchResults, 2, 2);
-
 		// Create the 'Search by' label
 		Label searchByLabel = new Label("Search by: ");
-		GridPane.setConstraints(searchByLabel, 0, 0);
 
 		// Create the options ChoiceBox
 		searchByOptions = new ChoiceBox<>();
 		searchByOptions.getItems().addAll("From City", "To City", "Date", "Time");
 		searchByOptions.setValue("From City");
-		GridPane.setConstraints(searchByOptions, 1, 0);
 
 		// Create a text field to input criteria
 		searchCriteria = new TextField();
 		searchCriteria.setPromptText("Enter your criteria");
-		GridPane.setConstraints(searchCriteria, 2, 0);
 
 		// Create a 'Search Now' button
 		Button searchNow = new Button();
+		searchNow.setPrefSize(100, 20);
 		searchNow.setText("Go!");
-		GridPane.setConstraints(searchNow, 3, 0);
 		searchNow.setOnAction(e -> goSearch());
 
 		// Create a 'Book" button
-		/*Button bookIt = new Button();
+		Button bookIt = new Button();
+		bookIt.setPrefSize(200, 20);
 		bookIt.setText("Book This Flight");
-		bookIt.setOnAction(e -> bookFlight());
-		GridPane.setConstraints(bookIt, 3, 10);*/
+		bookIt.setOnAction(e -> {
+			bookFlight();
+		});
+
+		// Create a 'Book" button
+		Button unbookIt = new Button();
+		unbookIt.setPrefSize(200, 20);
+		unbookIt.setText("Unbook This Flight");
+		unbookIt.setOnAction(e -> unbookFlight());
+
+		Button viewBookedFlights = new Button();
+		viewBookedFlights.setPrefSize(200, 20);
+		viewBookedFlights.setText("View all booked flights");
+		viewBookedFlights.setOnAction(e -> viewBookedFlights());
+
+		Button btnAdminAdd = new Button();
+		btnAdminAdd.setPrefSize(200, 20);
+		btnAdminAdd.setText("Add Flight");
+		btnAdminAdd.setOnAction(e -> {
+
+			try {
+				AddFlightScreen screen = new AddFlightScreen();
+				screen.start(primaryStage);
+				AlertBox.display("Created!", "Flight successfully added");
+			} catch (Exception e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			} finally {
+
+			}
+
+		});
+
+		Button deleteFlight = new Button();
+		deleteFlight.setPrefSize(200, 20);
+		deleteFlight.setText("Delete Flight");
+		deleteFlight.setOnAction(e -> deleteButtonClicked());
 
 		// Creates 'Log Out' button to go back to 'Login Screen'
 		Button btnLogOut = new Button("Log Out");
-		GridPane.setConstraints(btnLogOut, 0, 10);
+		btnLogOut.setPrefSize(200, 20);
 		btnLogOut.setOnAction(e -> {
 			try {
 				LoginScreen screen = new LoginScreen();
@@ -156,69 +175,6 @@ public class SearchAFlightAdmin extends Application {
 			}
 		});
 
-		Button btnDelete = new Button("Delete Flight");
-		GridPane.setConstraints(btnDelete, 0, 10);
-		btnLogOut.setOnAction(e -> {
-			try {
-				deleteButtonClicked();
-			} catch (Exception el) {
-				el.printStackTrace();
-			}
-		});
-
-		Button btnAdminAdd = new Button("Add Flight");
-		GridPane.setConstraints(btnAdminAdd, 4, 10);
-		btnAdminAdd.setOnAction(e -> {
-			try {
-				try {
-					AddFlightScreen screen = new AddFlightScreen();
-					screen.start(primaryStage);
-				} catch (Exception e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				}
-
-				Connection myConn = connect();
-
-				String query1 = "SELECT * FROM Flight";
-				PreparedStatement myStat1 = myConn.prepareStatement(query1);
-				ResultSet rs1;
-				rs1 = myStat1.executeQuery();
-
-				while (rs1.next()) {
-
-					flights.add(new Flight(rs1.getInt("FlightId"), rs1.getString("Carrier"),
-							rs1.getString("DepartingCity"), rs1.getString("ArrivingCity"),
-							rs1.getString("DepartingTime"), rs1.getString("ArrivalTime"),
-							rs1.getString("DepartingDate"), rs1.getString("ArrivalDate"),
-							rs1.getInt("currentPassengers"), rs1.getInt("PassengerLimit"), rs1.getInt("Price")));
-
-					searchResults.setItems(flights);
-
-				}
-
-				myConn.close();
-				myStat1.close();
-				rs1.close();
-			} catch (SQLException e2) {
-
-				e2.printStackTrace();
-			}
-		});
-		// Create a 'Book" button
-		Button bookIt = new Button();
-		bookIt.setText("Book This Flight");
-		bookIt.setOnAction(e -> bookFlight());
-		
-		// Create a 'Book" button
-		Button unbookIt = new Button();
-		unbookIt.setText("Unbook This Flight");
-		unbookIt.setOnAction(e -> unbookFlight());
-		
-		/*Button Update = new Button();
-		bookIt.setText("Update");
-		bookIt.setOnAction(e -> System.out.println("Update flight information"));*/
-
 		// Add top menu
 		HBox topMenu = new HBox();
 		topMenu.setPadding(new Insets(10, 10, 10, 10));
@@ -227,9 +183,9 @@ public class SearchAFlightAdmin extends Application {
 
 		// Add bottom menu
 		HBox bottomMenu = new HBox();
-		bottomMenu.setPadding(new Insets(20, 20, 20, 20));
-		bottomMenu.setSpacing(10);
-		bottomMenu.getChildren().addAll(btnLogOut, bookIt, unbookIt, btnAdminAdd, btnDelete);
+		bottomMenu.setPadding(new Insets(10, 10, 10, 10));
+		bottomMenu.setSpacing(50);
+		bottomMenu.getChildren().addAll(btnLogOut, bookIt, unbookIt, viewBookedFlights, btnAdminAdd, deleteFlight);
 
 		// Create the VBox, stack them!
 		VBox box = new VBox();
@@ -265,7 +221,8 @@ public class SearchAFlightAdmin extends Application {
 
 		case "From City":
 			try {
-				query = "SELECT * FROM FLIGHT WHERE DepartingCity = '" + searchCriteria.getText() + "'";
+				query = "SELECT * FROM FLIGHT WHERE Booked IS NULL " + "AND DepartingCity = '"
+						+ searchCriteria.getText() + "'";
 				myStmt = dbConn.prepareStatement(query);
 				myResult = myStmt.executeQuery();
 
@@ -274,8 +231,9 @@ public class SearchAFlightAdmin extends Application {
 					flights.add(new Flight(myResult.getInt("FlightID"), myResult.getString("Carrier"),
 							myResult.getString("DepartingCity"), myResult.getString("ArrivingCity"),
 							myResult.getString("DepartingTime"), myResult.getString("ArrivalTime"),
-							myResult.getString("DepartingDate"), myResult.getString("ArrivalDate"), 0,
-							myResult.getInt("PassengerLimit"), myResult.getInt("Price")));
+							myResult.getString("DepartingDate"), myResult.getString("ArrivalDate"),
+							myResult.getInt("currentPassenger"), myResult.getInt("PassengerLimit"),
+							myResult.getInt("Price")));
 					searchResults.setItems(flights);
 				}
 
@@ -289,7 +247,8 @@ public class SearchAFlightAdmin extends Application {
 
 		case "To City":
 			try {
-				query = "SELECT * FROM FLIGHT WHERE ArrivingCity = '" + searchCriteria.getText() + "'";
+				query = "SELECT * FROM FLIGHT WHERE Booked IS NULL AND ArrivingCity = '" + searchCriteria.getText()
+						+ "'";
 				myStmt = dbConn.prepareStatement(query);
 				myResult = myStmt.executeQuery();
 
@@ -298,8 +257,9 @@ public class SearchAFlightAdmin extends Application {
 					flights.add(new Flight(myResult.getInt("FlightID"), myResult.getString("Carrier"),
 							myResult.getString("DepartingCity"), myResult.getString("ArrivingCity"),
 							myResult.getString("DepartingTime"), myResult.getString("ArrivalTime"),
-							myResult.getString("DepartingDate"), myResult.getString("ArrivalDate"), 0,
-							myResult.getInt("PassengerLimit"), myResult.getInt("Price")));
+							myResult.getString("DepartingDate"), myResult.getString("ArrivalDate"),
+							myResult.getInt("currentPassenger"), myResult.getInt("PassengerLimit"),
+							myResult.getInt("Price")));
 					searchResults.setItems(flights);
 				}
 
@@ -313,7 +273,8 @@ public class SearchAFlightAdmin extends Application {
 
 		case "Date":
 			try {
-				query = "SELECT * FROM FLIGHT WHERE DepartingDate LIKE '" + searchCriteria.getText().charAt(0) + "/%'";
+				query = "SELECT * FROM FLIGHT WHERE Booked IS NULL AND DepartingDate LIKE '"
+						+ searchCriteria.getText().charAt(0) + "/%'";
 				myStmt = dbConn.prepareStatement(query);
 				myResult = myStmt.executeQuery();
 
@@ -322,8 +283,9 @@ public class SearchAFlightAdmin extends Application {
 					flights.add(new Flight(myResult.getInt("FlightID"), myResult.getString("Carrier"),
 							myResult.getString("DepartingCity"), myResult.getString("ArrivingCity"),
 							myResult.getString("DepartingTime"), myResult.getString("ArrivalTime"),
-							myResult.getString("DepartingDate"), myResult.getString("ArrivalDate"), 0,
-							myResult.getInt("PassengerLimit"), myResult.getInt("Price")));
+							myResult.getString("DepartingDate"), myResult.getString("ArrivalDate"),
+							myResult.getInt("currentPassenger"), myResult.getInt("PassengerLimit"),
+							myResult.getInt("Price")));
 					searchResults.setItems(flights);
 				}
 
@@ -337,7 +299,8 @@ public class SearchAFlightAdmin extends Application {
 
 		case "Time":
 			try {
-				query = "SELECT * FROM FLIGHT WHERE DepartingTime LIKE'" + searchCriteria.getText().charAt(0) + "%'";
+				query = "SELECT * FROM FLIGHT WHERE Booked IS NULL AND DepartingTime LIKE'"
+						+ searchCriteria.getText().charAt(0) + "%'";
 				myStmt = dbConn.prepareStatement(query);
 				myResult = myStmt.executeQuery();
 
@@ -346,8 +309,9 @@ public class SearchAFlightAdmin extends Application {
 					flights.add(new Flight(myResult.getInt("FlightID"), myResult.getString("Carrier"),
 							myResult.getString("DepartingCity"), myResult.getString("ArrivingCity"),
 							myResult.getString("DepartingTime"), myResult.getString("ArrivalTime"),
-							myResult.getString("DepartingDate"), myResult.getString("ArrivalDate"), 0,
-							myResult.getInt("PassengerLimit"), myResult.getInt("Price")));
+							myResult.getString("DepartingDate"), myResult.getString("ArrivalDate"),
+							myResult.getInt("currentPassenger"), myResult.getInt("PassengerLimit"),
+							myResult.getInt("Price")));
 					searchResults.setItems(flights);
 				}
 
@@ -365,7 +329,7 @@ public class SearchAFlightAdmin extends Application {
 		ObservableList<Flight> flights = FXCollections.observableArrayList();
 
 		Connection tempConn = null;
-		String query = "SELECT * FROM FLIGHT";
+		String query = "SELECT * FROM FLIGHT WHERE Booked IS NULL";
 
 		try {
 			tempConn = connect();
@@ -377,7 +341,7 @@ public class SearchAFlightAdmin extends Application {
 						myResult.getString("DepartingCity"), myResult.getString("ArrivingCity"),
 						myResult.getString("DepartingTime"), myResult.getString("ArrivalTime"),
 						myResult.getString("DepartingDate"), myResult.getString("ArrivalDate"),
-						myResult.getInt("currentPassengers"), myResult.getInt("PassengerLimit"),
+						myResult.getInt("currentPassenger"), myResult.getInt("PassengerLimit"),
 						myResult.getInt("Price")));
 				searchResults.setItems(flights);
 			}
@@ -389,31 +353,86 @@ public class SearchAFlightAdmin extends Application {
 		return flights;
 	}
 
-	// This is to shorten the code, instead of declaring a connection in a
-	// try-catch block everytime
-	public Connection connect() {
+	public void bookFlight() {
+		ObservableList<Flight> flights = FXCollections.observableArrayList();
+		Flight selectedFlight = searchResults.getSelectionModel().getSelectedItem();
+		/*
+		 * if (bookedFlights != null) { for (int i = 0; i < bookedFlights.size() + 1;
+		 * i++) {
+		 * 
+		 * if (selectedFlight.get(0).getDepartingDate().equals(bookedFlights.get(i).
+		 * getDepartingDate())) { new AlertBox(); AlertBox.display("Add a Flight",
+		 * "Booking Unsuccessful!"); break; } }
+		 * 
+		 * }
+		 */
 
-		Connection methodConnection = null;
+		Connection dbConnection = null;
 
 		try {
-			methodConnection = DriverManager.getConnection("jdbc:mysql://localhost:3306/java_project_database_master",
-					"root", "Adeftday0302!?");
 
-		} catch (Exception ex) {
-			System.out.println(ex.getMessage());
+			dbConnection = connect();
+
+			// casts flight id to an int and increases counter for booked flight
+
+			int intFlightid = selectedFlight.getFlightId();
+			counter++;
+			String increaseCurrent = "UPDATE Flight SET currentPassenger = " + counter + " WHERE FlightID = "
+					+ intFlightid;
+			PreparedStatement increaseCurrentstmt = dbConnection.prepareStatement(increaseCurrent);
+			increaseCurrentstmt.executeUpdate();
+
+			// select all the departing date values from booked flights
+			String getDepartingDate = "Select DepartingDate FROM Flight WHERE Booked LIKE 'Booked'";
+			PreparedStatement getDepartingDateStmt = dbConnection.prepareStatement(getDepartingDate);
+			ResultSet departingDateValue = getDepartingDateStmt.executeQuery();
+
+			// changes result set to a string parameters and checks if the selected record
+			// has a conflicting date
+			String[] arr = null;
+			while (departingDateValue.next()) {
+				String em = departingDateValue.getString("DepartingDate");
+				arr = em.split("\n");
+				for (int i = 0; i < arr.length; i++) {
+					System.out.println(arr[i]);
+					if (selectedFlight.getDepartingDate() == arr[i]) {
+						System.out.println("There is a conflicting flight");
+
+					}
+				}
+			}
+
+			if (selectedFlight.getCurrentPassengers() < selectedFlight.getPassengerLimit()) {
+				String bookFlight = "UPDATE Flight SET Booked = 'Booked' WHERE FlightID = " + intFlightid;
+				PreparedStatement bookFlightStmt = dbConnection.prepareStatement(bookFlight);
+				bookFlightStmt.executeUpdate();
+				AlertBox.display("Booked!", "Flight successfully booked");
+			} else {
+				System.out.println("The flight is full");
+			}
+
+			String query = "SELECT * FROM FLIGHT WHERE Booked IS NULL";
+			PreparedStatement myStmt = dbConnection.prepareStatement(query);
+			ResultSet myResult = myStmt.executeQuery();
+
+			while (myResult.next()) {
+
+				flights.add(new Flight(myResult.getInt("FlightID"), myResult.getString("Carrier"),
+						myResult.getString("DepartingCity"), myResult.getString("ArrivingCity"),
+						myResult.getString("DepartingTime"), myResult.getString("ArrivalTime"),
+						myResult.getString("DepartingDate"), myResult.getString("ArrivalDate"),
+						myResult.getInt("currentPassenger"), myResult.getInt("PassengerLimit"),
+						myResult.getInt("Price")));
+				searchResults.setItems(flights);
+
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
 		}
 
-		return methodConnection;
 	}
 
 	public void unbookFlight() {
-
-		new AlertBox();
-		AlertBox.display("Add a flight", "Booking Successfully Removed!");
-
-	}
-
-	public void bookFlight() {
 		ObservableList<Flight> flights = FXCollections.observableArrayList();
 		Flight selectedFlight = searchResults.getSelectionModel().getSelectedItem();
 
@@ -435,42 +454,82 @@ public class SearchAFlightAdmin extends Application {
 
 			dbConnection = connect();
 
-			String checkbooking = "Select FlightID FROM Customer WHERE FlightID NOT NULL";
-			PreparedStatement myStat1 = dbConnection.prepareStatement(checkbooking);
-			ResultSet rs2;
-			rs2 = myStat1.executeQuery();
+			int intFlightid = selectedFlight.getFlightId();
+			String unbookFlight = "UPDATE Flight SET Booked = NULL WHERE FlightID = " + intFlightid;
+			PreparedStatement unbookFlightStmt = dbConnection.prepareStatement(unbookFlight);
+			unbookFlightStmt.executeUpdate();
+			AlertBox.display("Booked!", "Flight successfully unbooked");
+			counter--;
+			String increaseCurrent = "UPDATE Flight SET currentPassenger = " + counter + " WHERE FlightID = "
+					+ intFlightid;
+			PreparedStatement increaseCurrentstmt = dbConnection.prepareStatement(increaseCurrent);
+			increaseCurrentstmt.executeUpdate();
 
-			String fid2 = selectedFlight.getFlightId() + "";
+			String query = "SELECT * FROM FLIGHT WHERE Booked IS NULL";
 
-			String fid = rs2.getInt("FlightID") + "";
-			while (rs2.next()) {
-				if (fid2 != fid) {
-					String sql = "INSERT INTO Customer(FlightID) VALUES(selectedFlight.getFlightId())";
+			PreparedStatement myStmt = dbConnection.prepareStatement(query);
+			ResultSet myResult = myStmt.executeQuery();
 
-					PreparedStatement myStat = dbConnection.prepareStatement(sql);
-					ResultSet rs1;
-					rs1 = myStat.executeQuery();
+			while (myResult.next()) {
 
-					myStat.executeUpdate();
-					dbConnection.close();
-					myStat.close();
+				flights.add(new Flight(myResult.getInt("FlightID"), myResult.getString("Carrier"),
+						myResult.getString("DepartingCity"), myResult.getString("ArrivingCity"),
+						myResult.getString("DepartingTime"), myResult.getString("ArrivalTime"),
+						myResult.getString("DepartingDate"), myResult.getString("ArrivalDate"),
+						myResult.getInt("currentPassenger"), myResult.getInt("PassengerLimit"),
+						myResult.getInt("Price")));
+				searchResults.setItems(flights);
 
-					AlertBox.display("Booked!", "Flight successfully booked");
-				} else if (fid2 == fid) {
-					AlertBox.display("Not Booked", "Flight already booked");
-
-				} else {
-					AlertBox.display("Unsuccessful", "Flight not booked");
-
-				}
 			}
-
-			// preparedStatement.setString(10, cust.getConfirmPassword());
-
 		} catch (SQLException e) {
-
 			e.printStackTrace();
 		}
+
+	}
+
+	public ObservableList<Flight> viewBookedFlights() {
+		ObservableList<Flight> flights = FXCollections.observableArrayList();
+
+		Connection tempConn = null;
+		String query = "SELECT * FROM FLIGHT WHERE Booked IS NOT NULL";
+
+		try {
+			tempConn = connect();
+			PreparedStatement myStmt = tempConn.prepareStatement(query);
+			ResultSet myResult = myStmt.executeQuery();
+
+			while (myResult.next()) {
+				flights.add(new Flight(myResult.getInt("FlightID"), myResult.getString("Carrier"),
+						myResult.getString("DepartingCity"), myResult.getString("ArrivingCity"),
+						myResult.getString("DepartingTime"), myResult.getString("ArrivalTime"),
+						myResult.getString("DepartingDate"), myResult.getString("ArrivalDate"),
+						myResult.getInt("currentPassenger"), myResult.getInt("PassengerLimit"),
+						myResult.getInt("Price")));
+				searchResults.setItems(flights);
+			}
+
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
+
+		return flights;
+	}
+
+	// This is to shorten the code, instead of declaring a connection in a
+	// try-catch block everytime
+	public Connection connect() {
+
+		Connection methodConnection = null;
+
+		try {
+			methodConnection = DriverManager.getConnection("jdbc:mysql://localhost:3306/java_project_database_master",
+					"root", "082486dk");
+
+		} catch (Exception ex) {
+			System.out.println(ex.getMessage());
+		}
+
+		return methodConnection;
 	}
 
 	private void deleteButtonClicked() {
@@ -480,8 +539,8 @@ public class SearchAFlightAdmin extends Application {
 
 		Connection myConn;
 		try {
-			myConn = DriverManager.getConnection(
-					"jdbc:mysql://localhost:3306/java_project_database_master\", \"root\", \"Adeftday0302!?");
+			myConn = DriverManager
+					.getConnection("jdbc:mysql://localhost:3306/java_project_database_master\", \"root\", \"082486dk");
 
 			String query = "DELETE * FROM Flight WHERE FlightId=" + selectedFlight.getFlightId();
 
@@ -493,7 +552,7 @@ public class SearchAFlightAdmin extends Application {
 
 			myStat.executeUpdate();
 
-			String query1 = "SELECT * FROM Flight";
+			String query1 = "SELECT * FROM FLIGHT WHERE Booked IS NULL";
 			PreparedStatement myStat1 = myConn.prepareStatement(query1);
 			ResultSet rs1;
 			rs1 = myStat1.executeQuery();

@@ -33,14 +33,13 @@ import UserTypes.Customer;
 import UserTypes.Flight;
 
 public class SearchAFlight extends Application {
+	int counter;
 
 	Scene SearchFlightScene;
 	ChoiceBox<String> searchByOptions;
 	TextField searchCriteria;
 	TableView<Flight> searchResults;
 	ObservableList<Flight> bookedFlights;
-	int counter;
-
 	public static void main(String[] args) {
 		Application.launch(args);
 	}
@@ -198,7 +197,8 @@ public class SearchAFlight extends Application {
 
 		case "From City":
 			try {
-				query = "SELECT * FROM FLIGHT WHERE DepartingCity = '" + searchCriteria.getText() + "'";
+				query = "SELECT * FROM FLIGHT WHERE Booked IS NULL "
+						+ "AND DepartingCity = '" + searchCriteria.getText() + "'";
 				myStmt = dbConn.prepareStatement(query);
 				myResult = myStmt.executeQuery();
 
@@ -223,7 +223,7 @@ public class SearchAFlight extends Application {
 
 		case "To City":
 			try {
-				query = "SELECT * FROM FLIGHT WHERE ArrivingCity = '" + searchCriteria.getText() + "'";
+				query = "SELECT * FROM FLIGHT WHERE Booked IS NULL AND ArrivingCity = '" + searchCriteria.getText() + "'";
 				myStmt = dbConn.prepareStatement(query);
 				myResult = myStmt.executeQuery();
 
@@ -248,7 +248,7 @@ public class SearchAFlight extends Application {
 
 		case "Date":
 			try {
-				query = "SELECT * FROM FLIGHT WHERE DepartingDate LIKE '" + searchCriteria.getText().charAt(0) + "/%'";
+				query = "SELECT * FROM FLIGHT WHERE Booked IS NULL AND DepartingDate LIKE '" + searchCriteria.getText().charAt(0) + "/%'";
 				myStmt = dbConn.prepareStatement(query);
 				myResult = myStmt.executeQuery();
 
@@ -273,7 +273,7 @@ public class SearchAFlight extends Application {
 
 		case "Time":
 			try {
-				query = "SELECT * FROM FLIGHT WHERE DepartingTime LIKE'" + searchCriteria.getText().charAt(0) + "%'";
+				query = "SELECT * FROM FLIGHT WHERE Booked IS NULL AND DepartingTime LIKE'" + searchCriteria.getText().charAt(0) + "%'";
 				myStmt = dbConn.prepareStatement(query);
 				myResult = myStmt.executeQuery();
 

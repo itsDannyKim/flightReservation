@@ -20,9 +20,9 @@ public class SplashScreen {
 		public void start(Stage primaryStage) {
 
 			// Create a pane to hold the image views
-			Pane pane = new HBox(10);
+			Pane pane = new HBox(20);
 			pane.setPadding(new Insets(0));
-			Image image = new Image("flights.jpg");
+			Image image = new Image("file:///Users/danielkim/Documents/School/CIS%203270/JavaProjectDK/JavaProjectDK/Resources/flights.jpg");
 			pane.getChildren().add(new ImageView(image));
 
 			// Create a scene and place it in the stage

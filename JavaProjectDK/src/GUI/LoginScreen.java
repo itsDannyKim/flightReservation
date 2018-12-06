@@ -38,9 +38,10 @@ public class LoginScreen extends Application {
 	static String usr = "";
 
 	public static void main(String[] args) {
-
+		
 		Application.launch(args);
-
+	
+		
 	}
 
 	@Override

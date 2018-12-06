@@ -174,7 +174,7 @@ public class AddFlightScreen extends Application {
 
 		try {
 			methodConnection = DriverManager.getConnection("jdbc:mysql://localhost:3306/java_project_database_master",
-					"root", "Adeftday0302!?");
+					"root", "082486dk");
 
 		} catch (Exception ex) {
 			System.out.println(ex.getMessage());
