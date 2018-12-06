@@ -160,6 +160,7 @@ public class AddFlightScreen extends Application {
 			preparedStatement.executeUpdate();
 			myConn.close();
 			preparedStatement.close();
+			AlertBox.display("Created!", "Flight successfully added");
 
 		} catch (SQLException e) {
 

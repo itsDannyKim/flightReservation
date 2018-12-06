@@ -1,10 +1,35 @@
 package GUI;
 
 // Java FX imports
+import javafx.application.Application;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
+import javafx.geometry.Insets;
+import javafx.scene.Group;
+import javafx.scene.Scene;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.TableCell;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableColumn.CellEditEvent;
+import javafx.scene.control.TableView;
+import javafx.scene.control.TextField;
+import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
+import javafx.scene.text.Font;
+import javafx.stage.Stage;
+import javafx.util.Callback;
 import UserTypes.Flight;
 import javafx.application.Application;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Group;
@@ -12,14 +37,18 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Label;
+import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableColumn.CellEditEvent;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import javafx.util.Callback;
 
 // JDBC imports
 import java.sql.Connection;
@@ -38,7 +67,7 @@ public class SearchAFlightAdmin extends Application {
 	Scene SearchFlightScene;
 	ChoiceBox<String> searchByOptions;
 	TextField searchCriteria;
-	TableView<Flight> searchResults;
+	TableView<Flight> searchResults = new TableView<Flight>();
 	ObservableList<Flight> bookedFlights;
 
 	public static void main(String[] args) {
@@ -52,6 +81,13 @@ public class SearchAFlightAdmin extends Application {
 		// This sets the name of the window title
 		primaryStage.setTitle("Search a Flight");
 
+		searchResults.setEditable(true);
+		/*
+		 * Callback<TableColumn, TableCell> cellFactory = new Callback<TableColumn,
+		 * TableCell>() { public TableCell call(TableColumn p) { return new
+		 * EditingCell(); } };
+		 */
+
 		// The following code creates the tables
 		TableColumn<Flight, Integer> flightIDColumn = new TableColumn<>("Flight ID");
 		flightIDColumn.setMinWidth(100);
@@ -59,31 +95,83 @@ public class SearchAFlightAdmin extends Application {
 
 		TableColumn<Flight, String> carrierColumn = new TableColumn<>("Carrier");
 		carrierColumn.setMinWidth(200);
-		carrierColumn.setCellValueFactory(new PropertyValueFactory<>("carrier"));
+		carrierColumn.setCellValueFactory(new PropertyValueFactory<Flight, String>("Carrier"));
+		carrierColumn.setCellFactory(TextFieldTableCell.forTableColumn());
+		carrierColumn.setOnEditCommit(new EventHandler<CellEditEvent<Flight, String>>() {
+			@Override
+			public void handle(CellEditEvent<Flight, String> t) {
+				((Flight) t.getTableView().getItems().get(t.getTablePosition().getRow())).setCarrier(t.getNewValue());
+			}
+		});
 
 		TableColumn<Flight, String> departingDateColumn = new TableColumn<>("Departing Date");
 		departingDateColumn.setMinWidth(200);
 		departingDateColumn.setCellValueFactory(new PropertyValueFactory<>("DepartingDate"));
+		departingDateColumn.setCellFactory(TextFieldTableCell.forTableColumn());
+		departingDateColumn.setOnEditCommit(new EventHandler<CellEditEvent<Flight, String>>() {
+			@Override
+			public void handle(CellEditEvent<Flight, String> t) {
+				((Flight) t.getTableView().getItems().get(t.getTablePosition().getRow())).setDepartingDate(t.getNewValue());
+			}
+		});
 
 		TableColumn<Flight, String> arrivalDateColumn = new TableColumn<>("Arrival Date");
 		arrivalDateColumn.setMinWidth(200);
 		arrivalDateColumn.setCellValueFactory(new PropertyValueFactory<>("ArrivalDate"));
-
+		arrivalDateColumn.setCellFactory(TextFieldTableCell.forTableColumn());
+		arrivalDateColumn.setOnEditCommit(new EventHandler<CellEditEvent<Flight, String>>() {
+			@Override
+			public void handle(CellEditEvent<Flight, String> t) {
+				((Flight) t.getTableView().getItems().get(t.getTablePosition().getRow())).setArrivalDate(t.getNewValue());
+			}
+		});
+		
 		TableColumn<Flight, String> departingCityColumn = new TableColumn<>("Departing City");
 		departingCityColumn.setMinWidth(200);
 		departingCityColumn.setCellValueFactory(new PropertyValueFactory<>("DepartingCity"));
+		departingCityColumn.setCellFactory(TextFieldTableCell.forTableColumn());
+		departingCityColumn.setOnEditCommit(new EventHandler<CellEditEvent<Flight, String>>() {
+			@Override
+			public void handle(CellEditEvent<Flight, String> t) {
+				((Flight) t.getTableView().getItems().get(t.getTablePosition().getRow())).setArrivalDate(t.getNewValue());
+			}
+		});
+		
 
 		TableColumn<Flight, String> arrivingCityColumn = new TableColumn<>("Arriving City");
 		arrivingCityColumn.setMinWidth(200);
 		arrivingCityColumn.setCellValueFactory(new PropertyValueFactory<>("ArrivingCity"));
+		arrivingCityColumn.setCellFactory(TextFieldTableCell.forTableColumn());
+		arrivingCityColumn.setOnEditCommit(new EventHandler<CellEditEvent<Flight, String>>() {
+			@Override
+			public void handle(CellEditEvent<Flight, String> t) {
+				((Flight) t.getTableView().getItems().get(t.getTablePosition().getRow())).setArrivalDate(t.getNewValue());
+			}
+		});
+		
 
 		TableColumn<Flight, String> arrivalTimeColumn = new TableColumn<>("Arrival Time");
 		arrivalTimeColumn.setMinWidth(200);
 		arrivalTimeColumn.setCellValueFactory(new PropertyValueFactory<>("ArrivalTime"));
+		arrivalTimeColumn.setCellFactory(TextFieldTableCell.forTableColumn());
+		arrivalTimeColumn.setOnEditCommit(new EventHandler<CellEditEvent<Flight, String>>() {
+			@Override
+			public void handle(CellEditEvent<Flight, String> t) {
+				((Flight) t.getTableView().getItems().get(t.getTablePosition().getRow())).setArrivalDate(t.getNewValue());
+			}
+		});
+		
 
 		TableColumn<Flight, String> departingTimeColumn = new TableColumn<>("Departing Time");
 		departingTimeColumn.setMinWidth(200);
 		departingTimeColumn.setCellValueFactory(new PropertyValueFactory<>("DepartingTime"));
+		departingTimeColumn.setCellFactory(TextFieldTableCell.forTableColumn());
+		departingTimeColumn.setOnEditCommit(new EventHandler<CellEditEvent<Flight, String>>() {
+			@Override
+			public void handle(CellEditEvent<Flight, String> t) {
+				((Flight) t.getTableView().getItems().get(t.getTablePosition().getRow())).setArrivalDate(t.getNewValue());
+			}
+		});
 
 		TableColumn<Flight, Integer> currentPassengersColumn = new TableColumn<>("Current Passengers");
 		currentPassengersColumn.setMinWidth(100);
@@ -96,6 +184,7 @@ public class SearchAFlightAdmin extends Application {
 		TableColumn<Flight, Integer> priceColumn = new TableColumn<>("Price");
 		priceColumn.setMinWidth(100);
 		priceColumn.setCellValueFactory(new PropertyValueFactory<>("Price"));
+		
 
 		searchResults = new TableView<>();
 		searchResults.setItems(getFlights());
@@ -148,7 +237,7 @@ public class SearchAFlightAdmin extends Application {
 			try {
 				AddFlightScreen screen = new AddFlightScreen();
 				screen.start(primaryStage);
-				AlertBox.display("Created!", "Flight successfully added");
+
 			} catch (Exception e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
@@ -537,23 +626,21 @@ public class SearchAFlightAdmin extends Application {
 		ObservableList<Flight> flights = FXCollections.observableArrayList();
 		Flight selectedFlight = searchResults.getSelectionModel().getSelectedItem();
 
-		Connection myConn;
+		Connection dbConnection = null;
 		try {
-			myConn = DriverManager
-					.getConnection("jdbc:mysql://localhost:3306/java_project_database_master\", \"root\", \"082486dk");
-
-			String query = "DELETE * FROM Flight WHERE FlightId=" + selectedFlight.getFlightId();
+			dbConnection = connect();
+			String query = "DELETE FROM Flight WHERE FlightId=" + selectedFlight.getFlightId();
 
 			// create a statement
 
-			PreparedStatement myStat = myConn.prepareStatement(query);
+			PreparedStatement myStat = dbConnection.prepareStatement(query);
 
 			// execute a query
 
 			myStat.executeUpdate();
 
 			String query1 = "SELECT * FROM FLIGHT WHERE Booked IS NULL";
-			PreparedStatement myStat1 = myConn.prepareStatement(query1);
+			PreparedStatement myStat1 = dbConnection.prepareStatement(query1);
 			ResultSet rs1;
 			rs1 = myStat1.executeQuery();
 
@@ -561,7 +648,7 @@ public class SearchAFlightAdmin extends Application {
 
 				flights.add(new Flight(rs1.getInt("FlightId"), rs1.getString("Carrier"), rs1.getString("DepartingCity"),
 						rs1.getString("ArrivingCity"), rs1.getString("DepartingTime"), rs1.getString("ArrivalTime"),
-						rs1.getString("DepartingDate"), rs1.getString("ArrivalDate"), rs1.getInt("currentPassengers"),
+						rs1.getString("DepartingDate"), rs1.getString("ArrivalDate"), rs1.getInt("currentPassenger"),
 						rs1.getInt("PassengerLimit"), rs1.getInt("Price")));
 
 				searchResults.setItems(flights);
